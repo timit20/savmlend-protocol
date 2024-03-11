@@ -1,0 +1,12 @@
+{
+    "savm": "0x77726bfbe61b6ad7463466fd521a3a4b89b0efd8",
+    "timeLock": "0x35F0db66Cc8b0e59C3bB5Af3c8c23a27f8be3982",
+    "unitoller": "0x94445711a94C9A0d58614ffcAe169a50E55D55bC",
+    "comptroller": "0xf9cc0aD1C72E3AE379F7aBE4f489F7a18A9bf69d",
+    "savmPriceOracle": "0x9786C3Eb8C70069a585e6d8bCC5a786A89ef4850",
+    "jumpRateModelBase": "0x2Fa8cF48462a824E0DB8a2312DF56AD1eaa9f573",
+    "jumpRateModelSavm": "0xe2708958b8874AfFe6cAF49fDCCbe568f0BF5A7D",
+    "cErc20Delegate": "0xFff750b7Cb4F1E9abaBab9694F432E980bE52b2F",
+    "sBtc": "0x06843B0814Ed2aE1819ae1811bb8c745565aBC8c",
+    "sSavm": "0xcdF01364CAF84c7d77D6Ce928127235126FFeb7C"
+}
