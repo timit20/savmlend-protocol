@@ -9,7 +9,7 @@ const SErc20DelegateName = "SErc20Delegate";
 const SErc20DelegatorName = "SErc20Delegator";
 const Cerc20TokenName = "CErc20V1";
 const comptrollerName = "contracts/Comptroller.sol:Comptroller";
-// 用于测试的token
+
 export const erc20TokenDeploy = async () => {
     const ERC20Token = await ethers.getContractFactory(erc20TokenName);
     const erc20Token = await ERC20Token.deploy();
@@ -18,7 +18,7 @@ export const erc20TokenDeploy = async () => {
     return erc20Token;
 }
 
-export const cERC20TokenDepoloy = async(erc20Address:string,
+export const sERC20TokenDepoloy = async(erc20Address:string,
     comptrollerAddress:string,
     jumpRateModelV2Address:string,
     exchangeRate:string,
@@ -42,8 +42,7 @@ export const cERC20TokenDepoloy = async(erc20Address:string,
     return erc20Token;
 }
 
-// 用于支持代理CToken使用，不支持代理的CToken不需要此合约
-// 所有 ERC20 基础资产的 CToken 采用委托代理模式
+// used on ctoken which support proxy 
 export const SErc20DelegateDeploy = async () => {
     const SErc20Delegate = await ethers.getContractFactory(SErc20DelegateName);
     const sErc20Delegate = await SErc20Delegate.deploy(
@@ -55,7 +54,7 @@ export const SErc20DelegateDeploy = async () => {
 }
 
 /**
- * 部署cToken
+ * deploy cToken
  * @param erc20Address 
  * @param comptrollerAddress 
  * @param jumpRateModelV2Address 
@@ -80,13 +79,13 @@ export const sErc20DelegatorDeploy =async (
         erc20Address,  //  erc20 token address
         comptrollerAddress, //  comptroller address
         jumpRateModelV2Address, //  jumpRateModelV2 address
-        parseEther("0.1"),  // 1个token 可以还  1 / 0.1(10)个cToken
+        parseEther("0.1"),  // how many sToken to exhcange
         name, //  name
         symbol,     //  symbol
         "18",       //  decimals
         owner,      // msg.sender
         sErc20DelegateAddress,  //  cErc20Delegate address  
-        "0x"   //  额外初始数据，此处填入0x，即无数据
+        "0x"   //  
     );
     // initialExchangeRateMantissa_ = 1 * 10 ^ (18 + underlyingDecimals - cTokenDecimals)
     await sErc20Delegator.deployed();
@@ -95,48 +94,41 @@ export const sErc20DelegatorDeploy =async (
 }
 
 
-// 设置保证金系数   0.1 * 10 ^ 18
-export const cToken__setReserveFactor = async(CErc20DelegatorAddress:string,reserveFactor:BigNumber)=>{
+//   0.1 * 10 ^ 18
+export const sToken__setReserveFactor = async(CErc20DelegatorAddress:string,reserveFactor:BigNumber)=>{
     const cToken = await ethers.getContractAt("CErc20Delegator",CErc20DelegatorAddress);
     await cToken._setReserveFactor(reserveFactor);
     console.log("cToken__setReserveFactor call success !!");
 }
 
 
-// 加入市场
-// export const cToken__supportMarket = async (comptrollerAddress:string, tokenAddress:string) => {
-//     const cToken = await ethers.getContractAt("Comptroller",comptrollerAddress);
-//     await cToken._supportMarket(tokenAddress);  //  把该token加入到市场中
-// }
-
 /**
- * 代币加入到市场中
+ * token into the market
  * @param comptrollerAddress 
  * @param cErc20DelegatorAddress 
  */
-export const cErc20Delegator_supportMarket = async (comptrollerAddress:string, address:string) => {
+export const sErc20Delegator_supportMarket = async (comptrollerAddress:string, address:string) => {
     const cToken = await ethers.getContractAt(comptrollerName,comptrollerAddress);
-    await cToken._supportMarket(address);  //  把该token加入到市场中
+    await cToken._supportMarket(address); 
     console.log("cErc20Delegator_supportMarket call success !!")
 }
 
 /**
- * 代币设置timeLock
+ * sToken set Admin
  * @param timeLockAddress 
  * @param CErc20DelegatorAddress 
  */
-export const cErc20Delegator_setPendingAdmin = async (CErc20DelegatorAddress:string,timeLockAddress:string)=>{
+export const sErc20Delegator_setPendingAdmin = async (CErc20DelegatorAddress:string,timeLockAddress:string)=>{
     const cToken = await ethers.getContractAt(SErc20DelegatorName,CErc20DelegatorAddress);
     await cToken._setPendingAdmin(timeLockAddress);
     console.log("cToken__PendingAdmin success !!");
 }
 
 /**
- * 储备金
- * @param CErc20DelegatorAddress s
+ * @param CErc20DelegatorAddress 
  * @param amount 
  */
-export const cErc20Delegator_addReserves = async(CErc20DelegatorAddress:string,amount:string) =>{
+export const sErc20Delegator_addReserves = async(CErc20DelegatorAddress:string,amount:string) =>{
     const cToken = await ethers.getContractAt(SErc20DelegatorName,CErc20DelegatorAddress);
     await cToken._addReserves(parseEther(amount));
     console.log("cToken__addReserves success !!");

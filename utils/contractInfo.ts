@@ -10,9 +10,7 @@ interface IData {
     info: IInfo,
     abi: any,
 }
-//  设置Api到本地文件夹中
 export const contractAbi = async ( addr: string, name: string) => {
-    //  获取合约信息
     const artifact = await artifacts.readArtifact(name);
 
     const data: IData = {
@@ -30,7 +28,6 @@ export const contractAbi = async ( addr: string, name: string) => {
     await createContractFile(name, data);
 }
 
-//  创建文件
 const createContractFile = async (fileName: string, data: IData) => {
     const depPath = resolve(join(__dirname, "..","abi"));
     // const depPath = resolve(join(__dirname, "..","..","vue_pro","src", "abi"));

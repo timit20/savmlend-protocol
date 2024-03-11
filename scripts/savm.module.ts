@@ -5,7 +5,7 @@ import { join } from "path";
 import { contractAbi } from "../utils/contractInfo";
 
 /**
- * @module comp token module
+ * @module savm token module
  */
 
 const savmName ="Savm";
@@ -13,7 +13,7 @@ const savmName ="Savm";
 
 /**
  * 
- * @param address 部署savmToken
+ * @param address 
  * @returns 
  */
 export const savmTokenDeploy = async(address:string):Promise<Contract>=>{
@@ -21,7 +21,7 @@ export const savmTokenDeploy = async(address:string):Promise<Contract>=>{
     const savm = await Savm.deploy(address);
     await savm.deployed();
     await contractAbi(savm.address, savmName);
-    console.log("strk address is %s",savm.address)
+    console.log("savm address is %s",savm.address)
     return savm;
 }
 

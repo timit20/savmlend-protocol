@@ -25,7 +25,6 @@ const sSavm2 = "0xcdF01364CAF84c7d77D6Ce928127235126FFeb7C";
 
 const address = "0xEC79934B99941A757a9201b872ae18fa60B48921";
 
-// 当前用户数据
 export const queryPrice = async(signer:Signer,sToken:string) =>{
     const comptroller = await ethers.getContractAt(comptrollerName,unitroller);
     // const mintAllowed = await comptroller.callStatic.mintAllowed(sSavm2,address,parseEther("0.1"));
@@ -159,25 +158,20 @@ export const queryPrice = async(signer:Signer,sToken:string) =>{
 export const changeRateModel= async() =>{
  const signer = await ethers.provider.getSigner();
  const owner = await signer.getAddress();
-  // Strk token 合约
   // const savm = await savmTokenDeploy(owner);
-  // const strk = {
+  // const savm = {
   //   address: "0xd8a65CC6fDf7B89A4163d3ec9bB42D4c0B94695A"
   // }
 
-  // timeLock 合约
   // const timeLock = await timeLockDeploy(owner);
   const timeLock ={
     address:owner
   }
-  // 利率模型
-  // 拐点型利率模型
   const jumpRateModelV2Base = await jumpRateModelV2Deploy(timeLock.address);
 //   const jumpRateModelV2Base = {
 //     address : "0x3c3C809859150b62eDD595174A026dfc0907aAE3"
 //   }
 
-  //链币-稳定币的拐点型
   const jumpRateModelV2Savm = await jumpRateModelV2Deploy2(timeLock.address);
 //   const jumpRateModelV2Savm = {
 //     address : "0x1599a526ecBeBA1B76ea518D63D1d7178605d78A"

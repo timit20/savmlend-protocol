@@ -18,7 +18,7 @@ export const unitollerDeploy = async () => {
     return unitroller;
 }
 
-// 设置管理员   代理绑定 转移所有权
+//
 export const unitoller__setPendingImplementation =async (unitrollerAddress:string, comptrollerAddress:string) => {
     const unitroller = await ethers.getContractAt("Unitroller", unitrollerAddress);
     await unitroller._setPendingImplementation(comptrollerAddress);
@@ -42,14 +42,14 @@ export const comptrollerDeploy = async () => {
     return comptroller;
 }
 
-//  给设置代理合约地址    新的 Comptroller 接受所有权
+// 
 export const comptroller__become = async(unitrollerAddress:string, comptrollerAddress:string)=>{
     const comptroller = await ethers.getContractAt(comptrollerName, comptrollerAddress);
     await comptroller._become(unitrollerAddress,{gasLimit:10000000});
     console.log("comptroller__become call  success !!");
 }
 
-// 应该是设置清算比例
+//
 export const comptroller__setCloseFactor =async (unitrollerAddress:string) => {
     const comptroller = await ethers.getContractAt(comptrollerName, unitrollerAddress);
     await comptroller._setCloseFactor(comptrollerConfig.closeFactor,{gasLimit:10000000});   //  0.5
@@ -57,14 +57,14 @@ export const comptroller__setCloseFactor =async (unitrollerAddress:string) => {
 }
 
 
-// 设置流动性激励为 8%，参数值就是1.08 * 1 ^ 18;
+// 8%,percent 
 export const comptroller__setLiquidationIncentive = async(unitrollerAddress:string) => {
     const comptroller = await ethers.getContractAt(comptrollerName, unitrollerAddress);
     await comptroller._setLiquidationIncentive(comptrollerConfig.liquidationIncentive,{gasLimit:10000000});    //  1.08
     console.log("comptroller__setLiquidationIncentive call  success !!");
 }
 
-// 设置预言机地址
+// 
 export const comptroller__setPriceOracle = async(unitrollerAddress:string, simplePriceOracleAddress:string) => {
     const comptroller = await ethers.getContractAt(comptrollerName, unitrollerAddress);
     await comptroller._setPriceOracle(simplePriceOracleAddress);
@@ -72,7 +72,7 @@ export const comptroller__setPriceOracle = async(unitrollerAddress:string, simpl
 }
 
 
-// 设置抵押率
+// 
 export const comptroller__setCollateralFactor = async(unitrollerAddress:string,cErc20DelegatorAddress:string,rate?:string) => {
     const comptroller = await ethers.getContractAt(comptrollerName,unitrollerAddress);
     // //  CToken cToken,CErc20Delegator.sol 地址
@@ -83,9 +83,6 @@ export const comptroller__setCollateralFactor = async(unitrollerAddress:string,c
 } 
 
 /**
- * 设置挖款COMP供应速率
- *  开启挖矿奖励
- *  速率是 每个区块的COMP（单位：wei）
  * @param comptollerAddress 
  * @param cTokens 
  * @param supplySpeeds 
@@ -98,7 +95,7 @@ export const comptroller_setSavmlendSpeeds = async(unitrollerAddress:string,cTok
 }
 
 /**
- * 设计借款额度上限，到达借款额度上限后无法在借出额度
+ * 
  * @param comptollerAddress 
  * @param cTokens 
  * @param newBorrowCaps 
@@ -109,7 +106,7 @@ export const comptroller_setMarketCaps = async(unitrollerAddress:string,cTokens:
 }
 
 /**
- * 设置可以设置借款上限的管理员地址
+ * 
  * @param comptrollerAddress 
  * @param newBorrowCapGuardian 
  */
@@ -119,7 +116,7 @@ export const comptroller_setMarketCapGuardian = async(unitrollerAddress:string,n
 }
 
 /**
- * 设置可以暂停的地址
+ * 
  * @param comptrollerAddress 
  * @param pauseGuardian 
  */
@@ -129,7 +126,7 @@ export const comptroller_setPauseGuardian = async(unitrollerAddress:string,pause
 }
 
 /**
- * 设置reserveInfo地址
+ * 
  * @param comptroller 
  * @param owner 
  */
@@ -140,7 +137,7 @@ export const comptroller_setReserveInfo = async(unitrollerAddress:string,owner:s
 
 
 /**
- * 退出市场
+ * 
  * @param comptrollerAddress 
  * @param cToken 
  */

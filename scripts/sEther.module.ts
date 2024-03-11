@@ -39,22 +39,20 @@ export const sEtherDeploy = async (
 }
 
 
-// 设置保证金系数   0.1 * 10 ^ 18
+//  0.1 * 10 ^ 18
 export const sEther__setReserveFactor = async(sEtherAddress:string)=>{
     const cEther = await ethers.getContractAt(sDelegatorName,sEtherAddress);
     await cEther._setReserveFactor(marketPlatformToken.reserveFactor);
     console.log("sEther__setReserveFactor call success !!");
 }
 
-// 添加到市场
 export const sEther__supportMarket = async (comptrollerG7Address:string, sEtherAddress:string) => {
     const sToken = await ethers.getContractAt(comptrollerName,comptrollerG7Address);
-    await sToken._supportMarket(sEtherAddress);  //  把该ETH加入到市场中
+    await sToken._supportMarket(sEtherAddress);  
     console.log("sEther__supportMarket call success !!")
 }
 
 /**
- * 减少储备
  * @param sEtherAddress 
  */
 export const sEther_reduceReserves = async(sEtherAddress:string) =>{

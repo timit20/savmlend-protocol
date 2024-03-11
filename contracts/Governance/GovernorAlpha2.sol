@@ -6,10 +6,10 @@ contract GovernorAlpha2 {
     string public constant name = "Savmlend Governor Alpha2";
 
     /// @notice The number of votes in support of a proposal required in order for a quorum to be reached and for a vote to succeed
-    function quorumVotes() public pure returns (uint) { return 130000e18; } // 130000 = 2% of STRK
+    function quorumVotes() public pure returns (uint) { return 130000e18; } // 130000 = 2% of SAVM
 
     /// @notice The number of votes required in order for a voter to become a proposer
-    function proposalThreshold() public pure returns (uint) { return 65188e18; } // 65188 = 1% of STRK
+    function proposalThreshold() public pure returns (uint) { return 65188e18; } // 65188 = 1% of SAVM
 
     /// @notice The maximum number of actions that can be included in a proposal
     function proposalMaxOperations() public pure returns (uint) { return 50; } // 50 actions
@@ -24,7 +24,7 @@ contract GovernorAlpha2 {
     TimelockInterface public timelock;
 
     /// @notice The address of the Savmlend governance token
-    StrkInterface public strk;
+    SavmInterface public savm;
 
     /// @notice The address of the Governor Guardian
     address public guardian;
@@ -127,15 +127,15 @@ contract GovernorAlpha2 {
     /// @notice An event emitted when a proposal has been executed in the Timelock
     event ProposalExecuted(uint id);
 
-    constructor(address timelock_, address strk_, address guardian_, uint256 latestProposalId_) public {
+    constructor(address timelock_, address savm_, address guardian_, uint256 latestProposalId_) public {
         timelock = TimelockInterface(timelock_);
-        strk = StrkInterface(strk_);
+        savm = SavmInterface(savm_);
         guardian = guardian_;
         proposalCount = latestProposalId_;
     }
 
     function propose(address[] memory targets, uint[] memory values, string[] memory signatures, bytes[] memory calldatas, string memory description) public returns (uint) {
-        require(strk.getPriorVotes(msg.sender, sub256(block.number, 1)) > proposalThreshold(), "GovernorAlpha::propose: proposer votes below proposal threshold");
+        require(savm.getPriorVotes(msg.sender, sub256(block.number, 1)) > proposalThreshold(), "GovernorAlpha::propose: proposer votes below proposal threshold");
         require(targets.length == values.length && targets.length == signatures.length && targets.length == calldatas.length, "GovernorAlpha::propose: proposal function information arity mismatch");
         require(targets.length != 0, "GovernorAlpha::propose: must provide actions");
         require(targets.length <= proposalMaxOperations(), "GovernorAlpha::propose: too many actions");
@@ -205,7 +205,7 @@ contract GovernorAlpha2 {
         require(state != ProposalState.Executed, "GovernorAlpha::cancel: cannot cancel executed proposal");
 
         Proposal storage proposal = proposals[proposalId];
-        require(msg.sender == guardian || strk.getPriorVotes(proposal.proposer, sub256(block.number, 1)) < proposalThreshold(), "GovernorAlpha::cancel: proposer above threshold");
+        require(msg.sender == guardian || savm.getPriorVotes(proposal.proposer, sub256(block.number, 1)) < proposalThreshold(), "GovernorAlpha::cancel: proposer above threshold");
 
         proposal.canceled = true;
         for (uint i = 0; i < proposal.targets.length; i++) {
@@ -264,7 +264,7 @@ contract GovernorAlpha2 {
         Proposal storage proposal = proposals[proposalId];
         Receipt storage receipt = proposal.receipts[voter];
         require(receipt.hasVoted == false, "GovernorAlpha::_castVote: voter already voted");
-        uint96 votes = strk.getPriorVotes(voter, proposal.startBlock);
+        uint96 votes = savm.getPriorVotes(voter, proposal.startBlock);
 
         if (support) {
             proposal.forVotes = add256(proposal.forVotes, votes);
@@ -327,6 +327,6 @@ interface TimelockInterface {
     function executeTransaction(address target, uint value, string calldata signature, bytes calldata data, uint eta) external payable returns (bytes memory);
 }
 
-interface StrkInterface {
+interface SavmInterface {
     function getPriorVotes(address account, uint blockNumber) external view returns (uint96);
 }

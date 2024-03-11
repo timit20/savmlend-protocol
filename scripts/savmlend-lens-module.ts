@@ -8,7 +8,7 @@ export const savmLensDeploy = async () => {
     const savmLens = await SavmLens.deploy();
     await savmLens.deployed();
     await contractAbi(savmLens.address, savmLensName);
-    console.log("strikeLens address is %s",savmLens.address);
+    console.log("savmlendLens address is %s",savmLens.address);
 
     return savmLens;
 }
