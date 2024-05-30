@@ -5,6 +5,7 @@ const daiToken = "DAIToken"
 const usdcToken = "USDCToken"
 const uniToken = "UNIToken"
 const linkToken = "LinkToken"
+const bBtcToken = "bBtcToken"
 
 export const USDTTokenDeploy = async () => {
     const USDT = await ethers.getContractFactory(usdtToken);
@@ -49,4 +50,13 @@ export const USDCTokenDepoly = async () => {
     // await contractAbi(usdt.address, daiToken);
     console.log("usdc address is %s",usdt.address)
     return usdt;
+}
+
+export const BBTCTokenDepoly = async() =>{
+    const BBTC = await ethers.getContractFactory(bBtcToken);
+    const bbtc = await BBTC.deploy();
+    await bbtc.deployed();
+    // await contractAbi(usdt.address, daiToken);
+    console.log("bbtc address is %s",bbtc.address)
+    await bbtc.deployed();
 }

@@ -1,6 +1,6 @@
 import { ethers } from "hardhat";
 import { contractAbi } from "../utils/contractInfo";
-import { marketBtcPlatformToken } from "./config";
+import { marketBtcPlatformToken,tboToken } from "./config";
 
 
 const SBtcName = "SBtc";
@@ -29,6 +29,31 @@ export const sBtcDeploy = async (
     return sBtc
 }
 
+const STboName = "STbo";
+
+export const sTboDeploy = async (
+    unitrollerAddress: string,
+    etherJumpRateModelV2Address: string,
+    owner: string
+) => {
+    const STbo = await ethers.getContractFactory(STboName);
+    const sTbo = await STbo.deploy(
+        unitrollerAddress,
+        etherJumpRateModelV2Address,
+        tboToken.initialExchangeRateMantissa, 
+        tboToken.name,
+        tboToken.symbol,
+        tboToken.decimals,
+        owner
+    );
+    await sTbo.deployed();
+    // await contractAbi(sEther.address, sBtcName);
+    console.log("sBtc address is %s",sTbo.address);
+    return sTbo
+}
+
+
+
 
 // 设置保证金系数   0.1 * 10 ^ 18
 export const sBtc__setReserveFactor = async(sBtcAddress:string)=>{
@@ -42,4 +67,19 @@ export const sBtc__supportMarket = async (comptrollerG7Address:string, sEtherAdd
     const sToken = await ethers.getContractAt(comptrollerName,comptrollerG7Address);
     await sToken._supportMarket(sEtherAddress);  //  把该ETH加入到市场中
     console.log("sEther__supportMarket call success !!")
+}
+
+
+// sBto添加到市场
+export const sTbo__supportMarket = async (comptrollerG7Address:string, sEtherAddress:string) => {
+    const sToken = await ethers.getContractAt(comptrollerName,comptrollerG7Address);
+    await sToken._supportMarket(sEtherAddress);  //  把该ETH加入到市场中
+    console.log("sEther__supportMarket call success !!")
+}
+
+// 设置保证金系数   0.1 * 10 ^ 18
+export const sTbo__setReserveFactor = async(sTboAddress:string)=>{
+    const cEther = await ethers.getContractAt(sDelegatorName,sTboAddress);
+    await cEther._setReserveFactor(marketBtcPlatformToken.reserveFactor);
+    console.log("sEther__setReserveFactor call success !!");
 }
