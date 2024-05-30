@@ -2,14 +2,15 @@ import { parseEther } from "ethers/lib/utils";
 import { writeFileSync } from "fs";
 import { ethers } from "hardhat";
 import { join, resolve } from "path";
-import { sBtcDeploy,sTboDeploy, sBtc__setReserveFactor,sTbo__setReserveFactor,sBtc__supportMarket,sTbo__supportMarket } from "./sBtc.module";
+import { sTboDeploy, sTbo__setReserveFactor,sTbo__supportMarket } from "./sBtc.module";
 import { unitollerDeploy, comptrollerDeploy, unitoller__setPendingImplementation, comptroller__setLiquidationIncentive, comptroller__become, comptroller__setCloseFactor, comptroller__setPriceOracle, comptroller__setCollateralFactor,comptroller_setMarketCapGuardian,comptroller_setPauseGuardian, comptroller_setReserveInfo } from "./comptroller.module";
 import { SErc20DelegateDeploy, sErc20DelegatorDeploy, sToken__setReserveFactor, sErc20Delegator_supportMarket,sErc20Delegator_addReserves,sErc20Delegator_setPendingAdmin } from "./sToken.module";
-import { jumpRateModelV2Deploy, jumpRateModelV2Deploy2, WhitePaperInterestRateModelDeploy } from "./interestRate.module";
+import { jumpRateModelV2Deploy, jumpRateModelV2Deploy2 } from "./interestRate.module";
 import { savmlendPriceOracleDeploy,savmlendPriceOracle_setUnderlyingPrice} from './savmPriceOracle.module';
 import { savmLensDeploy } from "./savmlend-lens-module";
 // import { DAITokenDeploy, USDTTokenDeploy } from "./tokens.module";
-import { marketBtcPlatformToken,tboToken,sSavmlendTokenConfig} from "./config";
+import { marketBtcPlatformToken,tboToken} from "./config";
+import { WBBTCTokenDepoly } from "./tokens.module"
 import { BigNumber } from "ethers";
 
 
@@ -97,14 +98,18 @@ async function main() {
   await sTbo__setReserveFactor(sTbo.address)
   await comptroller__setCollateralFactor(unitoller.address, sTbo.address,tboToken.collateralFactor)
 
-  
+  const wbTCToken = await WBBTCTokenDepoly()
 
-  const sSavm = await deployDelegatorToken("0x77726bfbe61b6ad7463466fd521a3a4b89b0efd8",unitoller.address,jumpRateModelV2Savm.address,timeLock.address,sErc20Delegate.address,
-    sSavmlendTokenConfig.name,sSavmlendTokenConfig.symbol,timeLock.address,sSavmlendTokenConfig.initReserves,sSavmlendTokenConfig.reserveFactor,sSavmlendTokenConfig.initialExchangeRateMantissa)
-  console.log("sSavm address is %s",sSavm.address)
+  // const sSavm = await deployDelegatorToken("0x77726bfbe61b6ad7463466fd521a3a4b89b0efd8",unitoller.address,jumpRateModelV2Savm.address,timeLock.address,sErc20Delegate.address,
+  //   sSavmlendTokenConfig.name,sSavmlendTokenConfig.symbol,timeLock.address,sSavmlendTokenConfig.initReserves,sSavmlendTokenConfig.reserveFactor,sSavmlendTokenConfig.initialExchangeRateMantissa)
+  // console.log("sSavm address is %s",sSavm.address)
 
-   await savmlendPriceOracle_setUnderlyingPrice(signer,savmPriceOracle.address, sSavm.address, sSavmlendTokenConfig.price);
-   await comptroller__setCollateralFactor(unitoller.address, sSavm.address,sSavmlendTokenConfig.collateralFactor);
+  const bBTC = await deployDelegatorToken(wbTCToken.address,unitoller.address,jumpRateModelV2Savm.address,timeLock.address,sErc20Delegate.address,
+    marketBtcPlatformToken.name,marketBtcPlatformToken.symbol,timeLock.address,marketBtcPlatformToken.initReserves,marketBtcPlatformToken.reserveFactor,marketBtcPlatformToken.initialExchangeRateMantissa)
+  console.log("bBTC address is %s",bBTC.address)
+
+   await savmlendPriceOracle_setUnderlyingPrice(signer,savmPriceOracle.address, bBTC.address, marketBtcPlatformToken.price);
+   await comptroller__setCollateralFactor(unitoller.address, bBTC.address,marketBtcPlatformToken.collateralFactor);
 
   //other token
   // todo 
@@ -135,7 +140,7 @@ async function main() {
 
   const info = {
     // savm: savm.address,
-    savm: "0x77726bfbe61b6ad7463466fd521a3a4b89b0efd8",
+    wbTCToken: wbTCToken.address,
     timeLock: timeLock.address,
     // savmLens: savmLens.address,
     // maxMillon: maxMillon.address,
@@ -147,7 +152,7 @@ async function main() {
     jumpRateModelSavm: jumpRateModelV2Savm.address,
     sErc20Delegate: sErc20Delegate.address,
     sTbo: sTbo.address,
-    sSavm: sSavm.address,
+    bBTC: bBTC.address,
 
     // tokenAddresses: tokenAddresses,
     // cTokenAddresses: cTokenAddresses,

@@ -5,8 +5,8 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract BBTC is ERC20, ERC20Burnable, Ownable {
-    constructor() ERC20("Wrapped BTC", "WBTC") {
+contract WBBTCToken is ERC20, ERC20Burnable, Ownable {
+    constructor() ERC20("Wrapped BiturboLend BTC", "WBBTC") {
         _mint(msg.sender, 100000000 * 10 ** 18);
     }
 }
