@@ -66,6 +66,10 @@ contract STbo is SToken {
         return redeemUnderlyingInternal(redeemAmount);
     }
 
+    function redeemUnderlyingAll() external returns (uint){
+        return redeemUnderlyingAllInternal(msg.sender);
+    }
+
     /**
       * @notice Sender borrows assets from the protocol to their own address
       * @param borrowAmount The amount of the underlying asset to borrow
@@ -138,6 +142,12 @@ contract STbo is SToken {
         require(msg.sender == from, "sender mismatch");
         require(msg.value == amount, "value mismatch");
         return amount;
+    }
+
+    function refund(address to,uint amount) internal {
+        require(address(this).balance >= amount, "Insufficient balance in the contract");
+        (bool success, ) = to.call.value(amount)("");
+        require(success, "Token Refund Fail");
     }
 
     function doTransferOut(address payable to, uint amount) internal {

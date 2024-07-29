@@ -60,6 +60,7 @@ export const comptroller__setCloseFactor =async (unitrollerAddress:string) => {
 // 8%,percent 
 export const comptroller__setLiquidationIncentive = async(unitrollerAddress:string) => {
     const comptroller = await ethers.getContractAt(comptrollerName, unitrollerAddress);
+    console.log(`comptroller is ${JSON.stringify(comptroller)}`)
     await comptroller._setLiquidationIncentive(comptrollerConfig.liquidationIncentive,{gasLimit:10000000});    //  1.08
     console.log("comptroller__setLiquidationIncentive call  success !!");
 }

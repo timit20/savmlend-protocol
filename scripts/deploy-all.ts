@@ -12,8 +12,7 @@ import { savmLensDeploy } from "./savmlend-lens-module";
 import { marketBtcPlatformToken,tboToken} from "./config";
 import { WBBTCTokenDepoly } from "./tokens.module"
 import { BigNumber } from "ethers";
-
-
+               
 async function main() {
 
   const signer = await ethers.provider.getSigner();
@@ -25,7 +24,7 @@ async function main() {
   // timeLock 
   // const timeLock = await timeLockDeploy(owner);
   const timeLock ={
-    address:owner
+    address:owner 
   }
 
   //savmlendLens 
@@ -48,7 +47,6 @@ async function main() {
   await comptroller_setMarketCapGuardian(unitoller.address,timeLock.address);
   await comptroller_setPauseGuardian(unitoller.address,timeLock.address);
   await comptroller_setReserveInfo(unitoller.address,owner);
-
   // jumpRateModelV2Base
   const jumpRateModelV2Base = await jumpRateModelV2Deploy(timeLock.address);
 

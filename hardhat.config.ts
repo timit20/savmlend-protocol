@@ -38,6 +38,11 @@ const config: HardhatUserConfig = {
 			url:"https://test-rpc-node-http.svmscan.io",
 			gas:10000000,
 			accounts:[process.env.SEPOLIA_PRIVATE_KEY!]
+		},
+		biturbotestnet:{
+		  url:"https://test-rpc.biturbo.io",
+		  gas:40000000,
+		  accounts:[process.env.BITRUBO_PRIVATE_KEY!]
 		}
 	},
 	solidity: {
@@ -54,7 +59,26 @@ const config: HardhatUserConfig = {
 			{ version: "0.8.10" },
 		]
 	},
-
+	etherscan: {
+		apiKey: {
+			// An API key needs to be written as the hardhat-verify plugin will require it, and the verification will fail if it is not provided.
+			// The current bitlayer browser has not yet enabled API key verification, so you can write any random string for now.
+			biturbotestnet: "U4NRVX2YX3ST4XI3UAM9CFG7MSDW12KFS6"
+		},
+		customChains: [
+			{
+			network: "biturbotestnet",
+			chainId: 725019,
+			urls: {
+				apiURL: "https://testnet.biturboscan.io/api",
+				browserURL: "https://testnet.biturboscan.io/"
+				}
+			}
+		]
+	}
 };
 
 export default config;
+
+
+

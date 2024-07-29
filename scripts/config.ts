@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { parseEther } from "ethers/lib/utils";
+import { parseEther,parseUnits } from "ethers/lib/utils";
 
 /**
  * @name 
@@ -13,8 +13,8 @@ export const settlementRate = parseEther("0.5");
  */
 export const comptrollerConfig = {
     closeFactor: parseEther("1"),
-    // liquidationIncentive : parseEther("1.08")
-    liquidationIncentive : parseEther("1.00")
+    liquidationIncentive : parseEther("1.08")
+    // liquidationIncentive : parseEther("1.00")
 }
 
 
@@ -78,7 +78,7 @@ export const tboToken ={
     name : "BiturboLend TBO",
     decimals: "8",
     initReserves:"0",
-    initialExchangeRateMantissa : parseEther("0.1"),
+    initialExchangeRateMantissa : parseUnits("0.2",27),
     reserveFactor : parseEther("0.2"), 
     collateralFactor:"0.8",
     price: parseEther("1"),

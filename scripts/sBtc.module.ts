@@ -48,7 +48,7 @@ export const sTboDeploy = async (
     );
     await sTbo.deployed();
     // await contractAbi(sEther.address, sBtcName);
-    console.log("sBtc address is %s",sTbo.address);
+    console.log("sTbo address is %s",sTbo.address);
     return sTbo
 }
 
@@ -74,12 +74,12 @@ export const sBtc__supportMarket = async (comptrollerG7Address:string, sEtherAdd
 export const sTbo__supportMarket = async (comptrollerG7Address:string, sEtherAddress:string) => {
     const sToken = await ethers.getContractAt(comptrollerName,comptrollerG7Address);
     await sToken._supportMarket(sEtherAddress);  //  把该ETH加入到市场中
-    console.log("sEther__supportMarket call success !!")
+    console.log("sTbo__supportMarket call success !!")
 }
 
 // 设置保证金系数   0.1 * 10 ^ 18
 export const sTbo__setReserveFactor = async(sTboAddress:string)=>{
     const cEther = await ethers.getContractAt(sDelegatorName,sTboAddress);
     await cEther._setReserveFactor(marketBtcPlatformToken.reserveFactor);
-    console.log("sEther__setReserveFactor call success !!");
+    console.log("sTbo__setReserveFactor call success !!");
 }
