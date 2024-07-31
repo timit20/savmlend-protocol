@@ -36,13 +36,13 @@ async function main() {
     //     timeLock.address
     // );
     const sTbo = {
-      address:"0xa9f623c04A5BB6E1c1e2a0dE0EfCF4aEB68692B2"
+      address:"0x31E47764deDDC02475CCdd14536820Fd858ad8C2"
     }
 
-    await sTbo__supportMarket(
-      unitoller.address, 
-      sTbo.address
-    )
+    // await sTbo__supportMarket(
+    //   unitoller.address, 
+    //   sTbo.address
+    // )
     await savmlendPriceOracle_setUnderlyingPrice(
       signer,
       savmPriceOracle.address, 
