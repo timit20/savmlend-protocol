@@ -905,8 +905,6 @@ contract SToken is STokenInterface, Exponential, TokenErrorReporter {
         //refundToken
         uint256 refundAmount = 0;
         if(vars.repayAmount > vars.accountBorrows){
-            (vars.mathErr, refundAmount) = subUInt(vars.repayAmount,vars.accountBorrows);
-            require(vars.mathErr == MathError.NO_ERROR, "Repay Error");
             vars.repayAmount = vars.accountBorrows;
         }
 
@@ -918,10 +916,6 @@ contract SToken is STokenInterface, Exponential, TokenErrorReporter {
          *   it returns the amount actually transferred, in case of a fee.
          */
         vars.actualRepayAmount = doTransferIn(payer, vars.repayAmount);
-
-        if(refundAmount > 0 ){
-            refund(payer,refundAmount);
-        }
 
         /*
          * We calculate the new borrower and total borrow balances, failing on underflow:

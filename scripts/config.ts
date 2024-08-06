@@ -78,7 +78,7 @@ export const tboToken ={
     name : "BiturboLend TBO",
     decimals: "8",
     initReserves:"0",
-    initialExchangeRateMantissa : parseUnits("0.2",27),
+    initialExchangeRateMantissa : parseUnits("2",26),
     reserveFactor : parseEther("0.2"), 
     collateralFactor:"0.8",
     price: parseEther("1"),

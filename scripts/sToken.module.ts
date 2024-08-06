@@ -1,7 +1,6 @@
 import { parseEther } from "ethers/lib/utils";
 import { ethers } from "hardhat"
 import { contractAbi } from "../utils/contractInfo";
-import { string } from "hardhat/internal/core/params/argumentTypes";
 import { BigNumber } from "ethers";
 
 const erc20TokenName = "ERC20Token"
@@ -45,8 +44,7 @@ export const sERC20TokenDepoloy = async(erc20Address:string,
 // used on ctoken which support proxy 
 export const SErc20DelegateDeploy = async () => {
     const SErc20Delegate = await ethers.getContractFactory(SErc20DelegateName);
-    const sErc20Delegate = await SErc20Delegate.deploy(
-        {gasLimit:10000000});
+    const sErc20Delegate = await SErc20Delegate.deploy({gasLimit:6000000});
     await sErc20Delegate.deployed();
     await contractAbi(sErc20Delegate.address, SErc20DelegateName);
     console.log("sErc20Delegate address is %s",sErc20Delegate.address);

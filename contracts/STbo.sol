@@ -66,9 +66,9 @@ contract STbo is SToken {
         return redeemUnderlyingInternal(redeemAmount);
     }
 
-    function redeemUnderlyingAll() external returns (uint){
-        return redeemUnderlyingAllInternal(msg.sender);
-    }
+    // function redeemUnderlyingAll() external returns (uint){
+    //     return redeemUnderlyingAllInternal(msg.sender);
+    // }
 
     /**
       * @notice Sender borrows assets from the protocol to their own address
@@ -84,7 +84,16 @@ contract STbo is SToken {
      * @dev Reverts upon any failure
      */
     function repayBorrow() external payable {
-        (uint err,) = repayBorrowInternal(msg.value);
+        (uint err,uint repayAmount) = repayBorrowInternal(msg.value);
+        uint refundAmount; 
+        MathError mathErr;
+        if(msg.value > repayAmount){
+            (mathErr, refundAmount) = subUInt(msg.value,repayAmount);
+            require(mathErr == MathError.NO_ERROR, "Repay Error");
+        }
+        if(refundAmount > 0){
+            refund(msg.sender,refundAmount);
+        }
         requireNoError(err, "repayBorrow failed");
     }
 
@@ -140,7 +149,7 @@ contract STbo is SToken {
     function doTransferIn(address from, uint amount) internal returns (uint) {
         // Sanity checks
         require(msg.sender == from, "sender mismatch");
-        require(msg.value == amount, "value mismatch");
+        require(msg.value >= amount, "value mismatch");
         return amount;
     }
 

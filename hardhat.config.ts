@@ -35,13 +35,13 @@ const config: HardhatUserConfig = {
 			accounts:[process.env.SEPOLIA_PRIVATE_KEY!]
 		},
 		satoshi_test:{
-			url:"https://test-rpc-node-http.svmscan.io",
+			url:"107.22.17.178:8545",
 			gas:10000000,
 			accounts:[process.env.SEPOLIA_PRIVATE_KEY!]
 		},
 		biturbotestnet:{
 		  url:"https://test-rpc.biturbo.io",
-		  gas:40000000,
+		//   gas:10000000,
 		  accounts:[process.env.BITRUBO_PRIVATE_KEY!]
 		}
 	},

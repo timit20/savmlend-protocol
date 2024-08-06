@@ -167,6 +167,30 @@ contract SErc20 is SToken, SErc20Interface {
     }
 
     /**
+     * refund the token 
+     */
+    function refund(address from, uint amount) internal {
+        EIP20NonStandardInterface token = EIP20NonStandardInterface(underlying);
+        uint balanceBefore = EIP20Interface(underlying).balanceOf(address(this));
+        token.transfer(from, amount);
+        bool success;
+        assembly {
+            switch returndatasize()
+                case 0 {                      // This is a non-standard ERC-20
+                    success := not(0)          // set success to true
+                }
+                case 32 {                     // This is a complaint ERC-20
+                    returndatacopy(0, 0, 32)
+                    success := mload(0)        // Set `success = returndata` of external call
+                }
+                default {                     // This is an excessively non-compliant ERC-20, revert.
+                    revert(0, 0)
+                }
+        }
+        require(success, "TOKEN_TRANSFER_OUT_FAILED");
+    }
+
+    /**
      * @dev Similar to EIP20 transfer, except it handles a False success from `transfer` and returns an explanatory
      *      error code rather than reverting. If caller has not called checked protocol's balance, this may revert due to
      *      insufficient cash held in this contract. If caller has checked protocol's balance prior to this call, and verified

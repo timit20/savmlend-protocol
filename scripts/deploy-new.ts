@@ -30,27 +30,27 @@ async function main() {
         address:owner
     }
 
-    // const sTbo = await sTboDeploy(
-    //     unitoller.address,
-    //     jumpRateModelV2Base.address,
-    //     timeLock.address
-    // );
-    const sTbo = {
-      address:"0x31E47764deDDC02475CCdd14536820Fd858ad8C2"
-    }
+    const sTbo = await sTboDeploy(
+        unitoller.address,
+        jumpRateModelV2Base.address,
+        timeLock.address
+    );
+    // const sTbo = {
+    //   address:"0x31E47764deDDC02475CCdd14536820Fd858ad8C2"
+    // }
 
     // await sTbo__supportMarket(
     //   unitoller.address, 
     //   sTbo.address
     // )
-    await savmlendPriceOracle_setUnderlyingPrice(
-      signer,
-      savmPriceOracle.address, 
-      sTbo.address, 
-      tboToken.price
-    );
-    await sTbo__setReserveFactor(sTbo.address)
-    await comptroller__setCollateralFactor(unitoller.address, sTbo.address,tboToken.collateralFactor)
+    // await savmlendPriceOracle_setUnderlyingPrice(
+    //   signer,
+    //   savmPriceOracle.address, 
+    //   sTbo.address, 
+    //   tboToken.price
+    // );
+    // await sTbo__setReserveFactor(sTbo.address)
+    // await comptroller__setCollateralFactor(unitoller.address, sTbo.address,tboToken.collateralFactor)
   
 }
 
