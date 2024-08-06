@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { parseEther } from "ethers/lib/utils";
+import { parseEther,parseUnits } from "ethers/lib/utils";
 
 /**
  * @name 
@@ -13,8 +13,8 @@ export const settlementRate = parseEther("0.5");
  */
 export const comptrollerConfig = {
     closeFactor: parseEther("1"),
-    // liquidationIncentive : parseEther("1.08")
-    liquidationIncentive : parseEther("1.00")
+    liquidationIncentive : parseEther("1.08")
+    // liquidationIncentive : parseEther("1.00")
 }
 
 
@@ -59,9 +59,10 @@ export const marketPlatformToken ={
 }
 
 export const marketBtcPlatformToken ={
-    symbol : "sBTC",
-    name : "Savmlend BTC",
-    decimals: "18",
+    symbol : "bBTC",
+    name : "BiturboLend BTC",
+    decimals: "8",
+    initReserves:"0",
     initialExchangeRateMantissa : parseEther("0.1"),
     reserveFactor : parseEther("0.2"), 
     collateralFactor:"0.8",
@@ -71,6 +72,22 @@ export const marketBtcPlatformToken ={
     supplyCaps: parseEther("0"),
     borrowCaps: parseEther("0")
 }
+
+export const tboToken ={
+    symbol : "bTbo",
+    name : "BiturboLend TBO",
+    decimals: "8",
+    initReserves:"0",
+    initialExchangeRateMantissa : parseUnits("2",26),
+    reserveFactor : parseEther("0.2"), 
+    collateralFactor:"0.8",
+    price: parseEther("1"),
+    supplySpeeds: parseEther("0"),
+    borrowSpeeds: parseEther("0"),
+    supplyCaps: parseEther("0"),
+    borrowCaps: parseEther("0")
+}
+
 
 
 

@@ -187,7 +187,7 @@ contract SToken is STokenInterface, Exponential, TokenErrorReporter {
      * @param owner The address of the account to query
      * @return The amount of underlying owned by `owner`
      */
-    function balanceOfUnderlying(address owner) external returns (uint) {
+    function balanceOfUnderlying(address owner) public returns (uint) {
         Exp memory exchangeRate = Exp({mantissa: exchangeRateCurrent()});
         (MathError mErr, uint balance) = mulScalarTruncate(exchangeRate, accountTokens[owner]);
         require(mErr == MathError.NO_ERROR, "balance could not be calculated");
@@ -592,6 +592,24 @@ contract SToken is STokenInterface, Exponential, TokenErrorReporter {
         return redeemFresh(msg.sender, 0, redeemAmount);
     }
 
+    /**
+     * @notice Sender redeems sTokens in exchange for a specified amount of underlying asset
+     * @dev Accrues interest whether or not the operation succeeds, unless reverted
+     * @dev from userAddress
+     * @return uint 0=success, otherwise a failure (see ErrorReporter.sol for details)
+     */
+    function redeemUnderlyingAllInternal(address from) internal nonReentrant returns (uint) {
+        uint error = accrueInterest();
+        if (error != uint(Error.NO_ERROR)) {
+            // accrueInterest emits logs on errors, but we still want to log the fact that an attempted redeem failed
+            return fail(Error(error), FailureInfo.REDEEM_ACCRUE_INTEREST_FAILED);
+        }
+        uint redeemAmountAll = balanceOfUnderlying(from);
+        // redeemFresh emits redeem-specific logs on errors, so we don't need to
+        return redeemFresh(msg.sender, 0, redeemAmountAll);
+    }
+
+
     struct RedeemLocalVars {
         Error err;
         MathError mathErr;
@@ -880,6 +898,15 @@ contract SToken is STokenInterface, Exponential, TokenErrorReporter {
         /////////////////////////
         // EFFECTS & INTERACTIONS
         // (No safe failures beyond this point)
+
+        /**
+         * check need refund token amount
+         */
+        //refundToken
+        uint256 refundAmount = 0;
+        if(vars.repayAmount > vars.accountBorrows){
+            vars.repayAmount = vars.accountBorrows;
+        }
 
         /*
          * We call doTransferIn for the payer and the repayAmount
@@ -1509,6 +1536,8 @@ contract SToken is STokenInterface, Exponential, TokenErrorReporter {
      *  If caller has checked protocol's balance, and verified it is >= amount, this should not revert in normal conditions.
      */
     function doTransferOut(address payable to, uint amount) internal;
+
+    function refund(address to,uint amount) internal;
 
 
     /*** Reentrancy Guard ***/
