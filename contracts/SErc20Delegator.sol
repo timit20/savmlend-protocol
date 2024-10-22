@@ -3,9 +3,8 @@ pragma solidity ^0.5.16;
 import "./STokenInterfaces.sol";
 
 /**
- * @title Savmlend's SErc20Delegator Contract
+ * @title SErc20Delegator Contract
  * @notice STokens which wrap an EIP-20 underlying and delegate to an implementation
- * @author Savmlend
  */
 contract SErc20Delegator is STokenInterface, SErc20Interface, SDelegatorInterface {
     /**

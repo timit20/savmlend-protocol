@@ -6,13 +6,15 @@ import { parseEther,parseUnits } from "ethers/lib/utils";
  */
 export const settlementRate = parseEther("0.5");
 
+export const blockPerYear = BigNumber.from("15768000");
+
 /**
  * @name closeFactor: 
  * @name liquidationIncentive 
  * if liquidationIncentive 8%，then 1.08 * 1 ^ 18;
  */
 export const comptrollerConfig = {
-    closeFactor: parseEther("1"),
+    closeFactor: parseEther("0.5"),
     liquidationIncentive : parseEther("1.08")
     // liquidationIncentive : parseEther("1.00")
 }
@@ -44,51 +46,36 @@ export const jumpRateModelConfig = {
 /**
  * chain token base config
  */
-export const marketPlatformToken ={
-    symbol : "sETH",
-    name : "Savmlend ETH",
-    decimals: "18",
-    initialExchangeRateMantissa : parseEther("1"),
-    reserveFactor : parseEther("0.2"),
-    collateralFactor:"0.5",
-    price: parseEther("2000"),
-    supplySpeeds: parseEther("0.06"),
-    borrowSpeeds: parseEther("0.14"),
-    supplyCaps: parseEther("0"),
-    borrowCaps: parseEther("0")
-}
-
-export const marketBtcPlatformToken ={
-    symbol : "bBTC",
-    name : "BiturboLend BTC",
+export const platformWrappedToken = {
+    symbol : "nNibi",
+    name : "Nebula nibi",
     decimals: "8",
     initReserves:"0",
-    initialExchangeRateMantissa : parseEther("0.1"),
+    initialExchangeRateMantissa : BigNumber.from("200000000000000"),
     reserveFactor : parseEther("0.2"), 
     collateralFactor:"0.8",
-    price: parseEther("51966.80"),
+    price: parseEther("0.00862"),
+    supplySpeeds: parseEther("0"),
+    borrowSpeeds: parseEther("0"),
+    supplyCaps: parseEther("0"),
+    borrowCaps: parseEther("0"),
+    contractName: "SNibi"
+}
+
+export const nebulaBtcToken = {
+    symbol : "nBTC",
+    name : "Nebula Btc",
+    decimals: "8",
+    initReserves:"0",
+    initialExchangeRateMantissa : BigNumber.from("200000000000000000000000000"),
+    reserveFactor : parseEther("0.2"), 
+    collateralFactor:"0.8",
+    price: parseEther("54974.65"),
     supplySpeeds: parseEther("0"),
     borrowSpeeds: parseEther("0"),
     supplyCaps: parseEther("0"),
     borrowCaps: parseEther("0")
 }
-
-export const tboToken ={
-    symbol : "bTbo",
-    name : "BiturboLend TBO",
-    decimals: "8",
-    initReserves:"0",
-    initialExchangeRateMantissa : parseUnits("2",26),
-    reserveFactor : parseEther("0.2"), 
-    collateralFactor:"0.8",
-    price: parseEther("1"),
-    supplySpeeds: parseEther("0"),
-    borrowSpeeds: parseEther("0"),
-    supplyCaps: parseEther("0"),
-    borrowCaps: parseEther("0")
-}
-
-
 
 
 /**
@@ -101,31 +88,11 @@ export const governorToken = {
     totalSupply: parseEther("6540888")
 }
 
-/**
- * wrap goverment token config
- */
-export const sSavmlendTokenConfig = {
-    name:"Savmlend SAVM",
-    symbol:"sSAVM",
-    initReserves:"0",
-    reserveFactor:parseEther("0.2"),
-    initialExchangeRateMantissa: BigNumber.from("1"),
-    collateralFactor:"0.5",
-    price : parseEther("3.7746"),
-    supplySpeeds: parseEther("0"),
-    borrowSpeeds: parseEther("0"),
-    supplyCaps: parseEther("0"),
-    borrowCaps: BigNumber.from("1")
-}
-
-
-
 export const governorConfig = {
     votingDelay:10,
     votingPeriod:25,
     proposalThreshold:parseEther("25000")
 }
-
 
 //token config 
 export const baseTokenConfig = [

@@ -7,9 +7,8 @@ interface SavmLike {
 }
 
 /**
- * @title Savmlend's SSavmLikeDelegate Contract
+ * @title LikeDelegate Contract
  * @notice STokens which can 'delegate votes' of their underlying ERC-20
- * @author Savmlend
  */
 contract SSavmLikeDelegate is SErc20Delegate {
   /**

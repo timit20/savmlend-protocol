@@ -3,9 +3,8 @@ pragma solidity ^0.5.16;
 import "./SErc20.sol";
 
 /**
- * @title Savmlend's SErc20Delegate Contract
+ * @title SErc20Delegate Contract
  * @notice STokens which wrap an EIP-20 underlying and are delegated to
- * @author Savmlend
  */
 contract SErc20Delegate is SErc20, SDelegateInterface {
     /**

@@ -4,9 +4,8 @@ import "./InterestRateModel.sol";
 import "./SafeMath.sol";
 
 /**
-  * @title Savmlend's WhitePaperInterestRateModel Contract
-  * @author Savmlend
-  * @notice The parameterized model described in section 2.4 of the original Savmlend Protocol whitepaper
+  * @title  WhitePaperInterestRateModel Contract
+  * @notice The parameterized model described in section 2.4 of the original Protocol whitepaper
   */
 contract WhitePaperInterestRateModel is InterestRateModel {
     using SafeMath for uint;
@@ -16,7 +15,7 @@ contract WhitePaperInterestRateModel is InterestRateModel {
     /**
      * @notice The approximate number of blocks per year that is assumed by the interest rate model
      */
-    uint public constant blocksPerYear = 15768000;
+    uint public blocksPerYear;
 
     /**
      * @notice The multiplier of utilization rate that gives the slope of the interest rate
@@ -33,7 +32,8 @@ contract WhitePaperInterestRateModel is InterestRateModel {
      * @param baseRatePerYear The approximate target base APR, as a mantissa (scaled by 1e18)
      * @param multiplierPerYear The rate of increase in interest rate wrt utilization (scaled by 1e18)
      */
-    constructor(uint baseRatePerYear, uint multiplierPerYear) public {
+    constructor(uint _blocksPerYear ,uint baseRatePerYear, uint multiplierPerYear) public {
+        blocksPerYear = _blocksPerYear;
         baseRatePerBlock = baseRatePerYear.div(blocksPerYear);
         multiplierPerBlock = multiplierPerYear.div(blocksPerYear);
 

@@ -4,9 +4,9 @@ import "./JumpRateModelV2.sol";
 import "./SafeMath.sol";
 
 /**
-  * @title Savmlend's DAIInterestRateModel Contract (version 3)
-  * @author Savmlend (modified by Dharma Labs)
-  * @notice The parameterized model described in section 2.4 of the original Savmlend Protocol whitepaper.
+  * @title  DAIInterestRateModel Contract (version 3)
+  * @author (modified by Dharma Labs)
+  * @notice The parameterized model described in section 2.4 of the original Protocol whitepaper.
   * Version 3 modifies the interest rate model in Version 2 by increasing the initial "gap" or slope of
   * the model prior to the "kink" from 2% to 4%, and enabling updateable parameters.
   */
@@ -34,7 +34,7 @@ contract DAIInterestRateModelV3 is JumpRateModelV2 {
      * @param jug_ The address of the Dai jug (where SF is kept)
      * @param owner_ The address of the owner, i.e. the Timelock contract (which has the ability to update parameters directly)
      */
-    constructor(uint jumpMultiplierPerYear, uint kink_, address pot_, address jug_, address owner_) JumpRateModelV2(0, 0, jumpMultiplierPerYear, kink_, owner_) public {
+    constructor(uint blocksPerYear,uint jumpMultiplierPerYear, uint kink_, address pot_, address jug_, address owner_) JumpRateModelV2(blocksPerYear,0, 0, jumpMultiplierPerYear, kink_, owner_) public {
         gapPerBlock = 4e16 / blocksPerYear;
         pot = PotLike(pot_);
         jug = JugLike(jug_);

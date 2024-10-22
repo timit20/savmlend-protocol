@@ -10,8 +10,8 @@ import "./Unitroller.sol";
 import "./Governance/SAVM.sol";
 
 /**
- * @title Savmlend's Comptroller Contract
- * @author Savmlend
+ * @title Comptroller Contract
+ * @author comptroller
  */
 contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerErrorReporter, Exponential {
     /// @notice Emitted when an admin supports a market
@@ -47,32 +47,32 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     /// @notice Emitted when protocol pause state is changed by admin
     event ActionProtocolPaused(bool state);
 
-    /// @notice Emitted when market savmlendd status is changed
-    event MarketSavmlendd(SToken sToken, bool isSavmlendd);
+    /// @notice Emitted when market status is changed
+    event ComptrollerMarket(SToken sToken, bool boolValue);
 
-    /// @notice Emitted when SAVM rate is changed
-    event NewSavmlendRate(uint oldSavmlendRate, uint newSavmlendRate);
+    /// @notice Emitted when rate is changed
+    event NewRate(uint oldRate, uint newRate);
 
-    /// @notice Emitted when a new SAVM speed is calculated for a market
-    event SavmlendSpeedUpdated(SToken indexed sToken, uint newSpeed);
+    /// @notice Emitted when a new speed is calculated for a market
+    event SpeedUpdated(SToken indexed sToken, uint newSpeed);
 
-    /// @notice Emitted when SAVM is distributed to a supplier
-    event DistributedSupplierSavmlend(SToken indexed sToken, address indexed supplier, uint savmlendDelta, uint savmlendSupplyIndex);
+    /// @notice Emitted when is distributed to a supplier
+    event DistributedSupplier(SToken indexed sToken, address indexed supplier, uint delta, uint supplyIndex);
 
-    /// @notice Emitted when SAVM is distributed to a borrower
-    event DistributedBorrowerSavmlend(SToken indexed sToken, address indexed borrower, uint savmlendDelta, uint savmlendBorrowIndex);
+    /// @notice Emitted when is distributed to a borrower
+    event DistributedBorrower(SToken indexed sToken, address indexed borrower, uint delta, uint borrowIndex);
 
-    /// @notice Emitted when new Savmlend speed is set
-    event ContributorSavmlendSpeedUpdated(address indexed contributor, uint newSavmlendSpeed);
+    /// @notice Emitted when new speed is set
+    event ContributorSpeedUpdated(address indexed contributor, uint newSpeed);
 
-    /// @notice Emitted when Savmlend is granted
-    event SavmlendGranted(address recipient, uint amount);
+    /// @notice Emitted when is granted
+    event Granted(address recipient, uint amount);
 
-     /// @notice Emitted when a new borrow-side Savmlend speed is calculated for a market
-    event SavmlendBorrowSpeedUpdated(SToken indexed sToken, uint newSpeed);
+     /// @notice Emitted when a new borrow-side speed is calculated for a market
+    event BorrowSpeedUpdated(SToken indexed sToken, uint newSpeed);
 
-    /// @notice Emitted when a new supply-side Savmlend speed is calculated for a market
-    event SavmlendSupplySpeedUpdated(SToken indexed sToken, uint newSpeed);
+    /// @notice Emitted when a new supply-side speed is calculated for a market
+    event SupplySpeedUpdated(SToken indexed sToken, uint newSpeed);
 
     /// @notice Emitted when reserve guardian is changed
     event NewReserveGuardian(address oldReserveGuardian, address newReserveGuardian, address oldReserveAddress, address newReserveAddress);
@@ -83,8 +83,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     /// @notice Emitted when market cap guardian is changed
     event NewMarketCapGuardian(address oldMarketCapGuardian, address newMarketCapGuardian);
 
-    /// @notice The initial SAVM index for a market
-    uint224 public constant savmlendInitialIndex = 1e36;
+    /// @notice The initial index for a market
+    uint224 public constant initialIndex = 1e36;
 
     // No collateralFactorMantissa may exceed this value
     uint internal constant collateralFactorMaxMantissa = 0.9e18; // 0.9
@@ -270,8 +270,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         }
 
         // Keep the flywheel moving
-        updateSavmlendSupplyIndex(sToken);
-        distributeSupplierSavmlend(sToken, minter);
+        updateSupplyIndex(sToken);
+        distributeSupplier(sToken, minter);
 
         return uint(Error.NO_ERROR);
     }
@@ -305,8 +305,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         }
 
         // Keep the flywheel moving
-        updateSavmlendSupplyIndex(sToken);
-        distributeSupplierSavmlend(sToken, redeemer);
+        updateSupplyIndex(sToken);
+        distributeSupplier(sToken, redeemer);
 
         return uint(Error.NO_ERROR);
     }
@@ -403,8 +403,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
         // Keep the flywheel moving
         Exp memory borrowIndex = Exp({mantissa: SToken(sToken).borrowIndex()});
-        updateSavmlendBorrowIndex(sToken, borrowIndex);
-        distributeBorrowerSavmlend(sToken, borrower, borrowIndex);
+        updateBorrowIndex(sToken, borrowIndex);
+        distributeBorrower(sToken, borrower, borrowIndex);
 
         return uint(Error.NO_ERROR);
     }
@@ -446,8 +446,8 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
         // Keep the flywheel moving
         Exp memory borrowIndex = Exp({mantissa: SToken(sToken).borrowIndex()});
-        updateSavmlendBorrowIndex(sToken, borrowIndex);
-        distributeBorrowerSavmlend(sToken, borrower, borrowIndex);
+        updateBorrowIndex(sToken, borrowIndex);
+        distributeBorrower(sToken, borrower, borrowIndex);
 
         return uint(Error.NO_ERROR);
     }
@@ -568,9 +568,9 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         }
 
         // Keep the flywheel moving
-        updateSavmlendSupplyIndex(sTokenCollateral);
-        distributeSupplierSavmlend(sTokenCollateral, borrower);
-        distributeSupplierSavmlend(sTokenCollateral, liquidator);
+        updateSupplyIndex(sTokenCollateral);
+        distributeSupplier(sTokenCollateral, borrower);
+        distributeSupplier(sTokenCollateral, liquidator);
 
         return uint(Error.NO_ERROR);
     }
@@ -616,9 +616,9 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         }
 
         // Keep the flywheel moving
-        updateSavmlendSupplyIndex(sToken);
-        distributeSupplierSavmlend(sToken, src);
-        distributeSupplierSavmlend(sToken, dst);
+        updateSupplyIndex(sToken);
+        distributeSupplier(sToken, src);
+        distributeSupplier(sToken, dst);
 
         return uint(Error.NO_ERROR);
     }
@@ -962,7 +962,7 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
 
         sToken.isSToken(); // Sanity check to make sure its really a SToken
 
-        markets[address(sToken)] = Market({isListed: true, isSavmlendd: false, collateralFactorMantissa: 0});
+        markets[address(sToken)] = Market({isListed: true, isValue: false, collateralFactorMantissa: 0});
 
         _addMarketInternal(address(sToken));
         _initializeMarket(address(sToken));
@@ -975,20 +975,20 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     function _initializeMarket(address sToken) internal {
         uint32 blockNumber = safe32(getBlockNumber(), "block number exceeds 32 bits");
 
-        SavmlendMarketState storage supplyState = savmlendSupplyState[sToken];
-        SavmlendMarketState storage borrowState = savmlendBorrowState[sToken];
+        MarketState storage supplyState = supplyState[sToken];
+        MarketState storage borrowState = borrowState[sToken];
 
         /*
          * Update market state indices
          */
         if (supplyState.index == 0) {
             // Initialize supply state index with default value
-            supplyState.index = savmlendInitialIndex;
+            supplyState.index = initialIndex;
         }
 
          if (borrowState.index == 0) {
             // Initialize borrow state index with default value
-            borrowState.index = savmlendInitialIndex;
+            borrowState.index = initialIndex;
         }
 
         supplyState.block = borrowState.block = blockNumber;
@@ -1112,58 +1112,58 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
         return msg.sender == admin || msg.sender == comptrollerImplementation;
     }
 
-    /*** SAVM Distribution ***/
+    /*** Distribution ***/
 
     /**
-     * @notice Set SAVM speed for a single market
-     * @param sToken The market whose SAVM speed to update
-     * @param supplySpeeds New supply-side SAVM speed for market
-     * @param borrowSpeeds New borrow-side SAVM speed for market
+     * @notice Set speed for a single market
+     * @param sToken The market whose speed to update
+     * @param supplySpeeds New supply-side speed for market
+     * @param borrowSpeeds New borrow-side speed for market
      */
-    function _setSavmlendSpeeds(SToken[] memory sToken, uint[] memory supplySpeeds, uint[] memory borrowSpeeds) public {
-        require(adminOrInitializing(), "only admin can set savmlend speed");
+    function _setSpeeds(SToken[] memory sToken, uint[] memory supplySpeeds, uint[] memory borrowSpeeds) public {
+        require(adminOrInitializing(), "only admin can set speed");
 
         uint numTokens = sToken.length;
         require(numTokens == supplySpeeds.length && numTokens == borrowSpeeds.length, "Comptroller::_setCompSpeeds invalid input");
 
         for (uint i = 0; i < numTokens; ++i) {
-            setSavmlendSpeedInternal(sToken[i], supplySpeeds[i], borrowSpeeds[i]);
+            setSpeedInternal(sToken[i], supplySpeeds[i], borrowSpeeds[i]);
         }
     }
 
-    function setSavmlendSpeedInternal(SToken sToken, uint supplySpeed, uint borrowSpeed) internal {
+    function setSpeedInternal(SToken sToken, uint supplySpeed, uint borrowSpeed) internal {
         Market storage market = markets[address(sToken)];
-        require(market.isListed, "savmlend market is not listed");
+        require(market.isListed, "market is not listed");
 
-        if (savmlendSupplySpeeds[address(sToken)] != supplySpeed) {
-            updateSavmlendSupplyIndex(address(sToken));
-            savmlendSupplySpeeds[address(sToken)] = supplySpeed;
-            emit SavmlendSupplySpeedUpdated(sToken, supplySpeed);
+        if (supplySpeeds[address(sToken)] != supplySpeed) {
+            updateSupplyIndex(address(sToken));
+            supplySpeeds[address(sToken)] = supplySpeed;
+            emit SupplySpeedUpdated(sToken, supplySpeed);
         }
 
-        if (savmlendBorrowSpeeds[address(sToken)] != borrowSpeed) {
+        if (borrowSpeeds[address(sToken)] != borrowSpeed) {
             Exp memory borrowIndex = Exp({mantissa: sToken.borrowIndex()});
-            updateSavmlendBorrowIndex(address(sToken), borrowIndex);
+            updateBorrowIndex(address(sToken), borrowIndex);
 
             // Update speed and emit event
-            savmlendBorrowSpeeds[address(sToken)] = borrowSpeed;
-            emit SavmlendBorrowSpeedUpdated(sToken, borrowSpeed);
+            borrowSpeeds[address(sToken)] = borrowSpeed;
+            emit BorrowSpeedUpdated(sToken, borrowSpeed);
         }
     }
 
     /**
-     * @notice Accrue SAVM to the market by updating the supply index
+     * @notice Accrue to the market by updating the supply index
      * @param sToken The market whose supply index to update
      */
-    function updateSavmlendSupplyIndex(address sToken) internal {
-        SavmlendMarketState storage supplyState = savmlendSupplyState[sToken];
-        uint supplySpeed = savmlendSupplySpeeds[sToken];
+    function updateSupplyIndex(address sToken) internal {
+        MarketState storage supplyState = supplyState[sToken];
+        uint supplySpeed = supplySpeeds[sToken];
         uint32 blockNumber = safe32(getBlockNumber(), "block number exceeds 32 bits");
         uint deltaBlocks = sub_(uint(blockNumber), uint(supplyState.block));
         if (deltaBlocks > 0 && supplySpeed > 0) {
             uint supplyTokens = SToken(sToken).totalSupply();
-            uint savmlendAccrued = mul_(deltaBlocks, supplySpeed);
-            Double memory ratio = supplyTokens > 0 ? fraction(savmlendAccrued, supplyTokens) : Double({mantissa: 0});
+            uint accrued = mul_(deltaBlocks, supplySpeed);
+            Double memory ratio = supplyTokens > 0 ? fraction(accrued, supplyTokens) : Double({mantissa: 0});
             supplyState.index = safe224(add_(Double({mantissa: supplyState.index}), ratio).mantissa, "new index exceeds 224 bits");
             supplyState.block = blockNumber;
         } else if (deltaBlocks > 0) {
@@ -1172,18 +1172,18 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     }
 
     /**
-     * @notice Accrue SAVM to the market by updating the borrow index
+     * @notice Accrue to the market by updating the borrow index
      * @param sToken The market whose borrow index to update
      */
-    function updateSavmlendBorrowIndex(address sToken, Exp memory marketBorrowIndex) internal {
-        SavmlendMarketState storage borrowState = savmlendBorrowState[sToken];
-        uint borrowSpeed = savmlendBorrowSpeeds[sToken];
+    function updateBorrowIndex(address sToken, Exp memory marketBorrowIndex) internal {
+        MarketState storage borrowState = borrowState[sToken];
+        uint borrowSpeed = borrowSpeeds[sToken];
         uint32 blockNumber = safe32(getBlockNumber(), "block number exceeds 32 bits");
         uint deltaBlocks = sub_(uint(blockNumber), uint(borrowState.block));
         if (deltaBlocks > 0 && borrowSpeed > 0) {
             uint borrowAmount = div_(SToken(sToken).totalBorrows(), marketBorrowIndex);
-            uint savmlendAccrued = mul_(deltaBlocks, borrowSpeed);
-            Double memory ratio = borrowAmount > 0 ? fraction(savmlendAccrued, borrowAmount) : Double({mantissa: 0});
+            uint accrued = mul_(deltaBlocks, borrowSpeed);
+            Double memory ratio = borrowAmount > 0 ? fraction(accrued, borrowAmount) : Double({mantissa: 0});
             borrowState.index = safe224(add_(Double({mantissa: borrowState.index}), ratio).mantissa, "new index exceeds 224 bits");
             borrowState.block = blockNumber;
         } else if (deltaBlocks > 0) {
@@ -1192,100 +1192,100 @@ contract Comptroller is ComptrollerV7Storage, ComptrollerInterface, ComptrollerE
     }
 
     /**
-     * @notice Calculate SAVM accrued by a supplier and possibly transfer it to them
+     * @notice Calculate accrued by a supplier and possibly transfer it to them
      * @param sToken The market in which the supplier is interacting
-     * @param supplier The address of the supplier to distribute SAVM to
+     * @param supplier The address of the supplier to distribute to
      */
-    function distributeSupplierSavmlend(address sToken, address supplier) internal {
-        SavmlendMarketState storage supplyState = savmlendSupplyState[sToken];
+    function distributeSupplier(address sToken, address supplier) internal {
+        MarketState storage supplyState = supplyState[sToken];
 
         uint supplyIndex = supplyState.index;
-        uint supplierIndex = savmlendSupplierIndex[sToken][supplier];
+        uint innerSupplierIndex = supplierIndex[sToken][supplier];
 
-        savmlendSupplierIndex[sToken][supplier] = supplyIndex;
+        supplierIndex[sToken][supplier] = supplyIndex;
 
-        if (supplierIndex == 0 && supplyIndex >= savmlendInitialIndex) {
-            supplierIndex = savmlendInitialIndex;
+        if (innerSupplierIndex == 0 && supplyIndex >= initialIndex) {
+            innerSupplierIndex = initialIndex;
         }
 
-        Double memory deltaIndex = Double({mantissa: sub_(supplyIndex, supplierIndex)});
+        Double memory deltaIndex = Double({mantissa: sub_(supplyIndex, innerSupplierIndex)});
         uint supplierTokens = SToken(sToken).balanceOf(supplier);
         uint supplierDelta = mul_(supplierTokens, deltaIndex);
-        uint supplierAccrued = add_(savmlendAccrued[supplier], supplierDelta);
-        savmlendAccrued[supplier] = supplierAccrued;
-        emit DistributedSupplierSavmlend(SToken(sToken), supplier, supplierDelta, supplyIndex);
+        uint supplierAccrued = add_(accrued[supplier], supplierDelta);
+        accrued[supplier] = supplierAccrued;
+        emit DistributedSupplier(SToken(sToken), supplier, supplierDelta, supplyIndex);
     }
 
     /**
-     * @notice Calculate SAVM accrued by a borrower and possibly transfer it to them
+     * @notice Calculate accrued by a borrower and possibly transfer it to them
      * @dev Borrowers will not begin to accrue until after the first interaction with the protocol.
      * @param sToken The market in which the borrower is interacting
-     * @param borrower The address of the borrower to distribute SAVM to
+     * @param borrower The address of the borrower to distribute to
      */
-    function distributeBorrowerSavmlend(address sToken, address borrower, Exp memory marketBorrowIndex) internal {
-        SavmlendMarketState storage borrowState = savmlendBorrowState[sToken];
+    function distributeBorrower(address sToken, address borrower, Exp memory marketBorrowIndex) internal {
+        MarketState storage borrowState = borrowState[sToken];
 
         uint borrowIndex = borrowState.index;
-        uint borrowerIndex = savmlendBorrowerIndex[sToken][borrower];
+        uint innerBorrowerIndex = borrowerIndex[sToken][borrower];
 
-        savmlendBorrowerIndex[sToken][borrower] = borrowIndex;
+        borrowerIndex[sToken][borrower] = borrowIndex;
 
-        if (borrowerIndex == 0 && borrowIndex >= savmlendInitialIndex) {
-            borrowerIndex = savmlendInitialIndex;
+        if (innerBorrowerIndex == 0 && borrowIndex >= initialIndex) {
+            innerBorrowerIndex = initialIndex;
         }
 
-        Double memory deltaIndex = Double({mantissa: sub_(borrowIndex, borrowerIndex)});
+        Double memory deltaIndex = Double({mantissa: sub_(borrowIndex, innerBorrowerIndex)});
         uint borrowerAmount = div_(SToken(sToken).borrowBalanceStored(borrower), marketBorrowIndex);
 
-        // Calculate savmlend accrued: sTokenAmount * accruedPerBorrowedUnit
+        // Calculate accrued: sTokenAmount * accruedPerBorrowedUnit
         uint borrowerDelta = mul_(borrowerAmount, deltaIndex);
-        uint borrowerAccrued = add_(savmlendAccrued[borrower], borrowerDelta);
-        savmlendAccrued[borrower] = borrowerAccrued;
-        emit DistributedBorrowerSavmlend(SToken(sToken), borrower, borrowerDelta, borrowIndex);
+        uint borrowerAccrued = add_(accrued[borrower], borrowerDelta);
+        accrued[borrower] = borrowerAccrued;
+        emit DistributedBorrower(SToken(sToken), borrower, borrowerDelta, borrowIndex);
     }
 
-    /*** SAVM Distribution Admin ***/
+    /*** Distribution Admin ***/
 
     /**
-     * @notice Update additional accrued Savmlend for a contributor
+     * @notice Update additional accrued for a contributor
      * @param contributor The address to calculate contributor rewards
      */
     function updateContributorRewards(address contributor) public {
-        uint savmlendSpeed = savmlendContributorSpeeds[contributor];
+        uint speed = contributorSpeeds[contributor];
         uint blockNumber = getBlockNumber();
         uint deltaBlocks = sub_(blockNumber, lastContributorBlock[contributor]);
 
-        if (deltaBlocks > 0 && savmlendSpeed > 0) {
-            uint newAccrued = mul_(deltaBlocks, savmlendSpeed);
-            uint contributorAccrued = add_(savmlendAccrued[contributor], newAccrued);
+        if (deltaBlocks > 0 && speed > 0) {
+            uint newAccrued = mul_(deltaBlocks, speed);
+            uint contributorAccrued = add_(accrued[contributor], newAccrued);
 
-            savmlendAccrued[contributor] = contributorAccrued;
+            accrued[contributor] = contributorAccrued;
             lastContributorBlock[contributor] = blockNumber;
         }
     }
 
     /**
-     * @notice Set Savmlend speed for a single contributor
-     * @param contributor The contributor whose Savmlend speed to set
-     * @param savmlendSpeed New Savmlend speed for contributor
+     * @notice Set speed for a single contributor
+     * @param contributor The contributor whose speed to set
+     * @param speed New speed for contributor
      */
-    function _setContributorSavmlendSpeed(address contributor, uint savmlendSpeed) public {
-        require(adminOrInitializing(), "Only Admin can set SAVM speed");
+    function _setContributorSpeed(address contributor, uint speed) public {
+        require(adminOrInitializing(), "Only Admin can set speed");
 
-        // Update contributor SAVM reward before update speed
+        // Update contributor reward before update speed
         updateContributorRewards(contributor);
 
-        if (savmlendSpeed == 0) {
+        if (speed == 0) {
             // release storage
             delete lastContributorBlock[contributor];
         }
 
         // Update last block
         lastContributorBlock[contributor] = getBlockNumber();
-        // Update SAVM speed
-        savmlendContributorSpeeds[contributor] = savmlendSpeed;
+        // Update speed
+        contributorSpeeds[contributor] = speed;
 
-        emit ContributorSavmlendSpeedUpdated(contributor, savmlendSpeed);
+        emit ContributorSpeedUpdated(contributor, speed);
     }
 
     /**

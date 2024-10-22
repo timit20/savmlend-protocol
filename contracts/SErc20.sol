@@ -3,9 +3,8 @@ pragma solidity ^0.5.16;
 import "./SToken.sol";
 
 /**
- * @title Savmlend's SErc20 Contract
+ * @title SErc20 Contract
  * @notice STokens which wrap an EIP-20 underlying
- * @author Savmlend
  */
 contract SErc20 is SToken, SErc20Interface {
     /**

@@ -13,11 +13,11 @@ interface ComptrollerLensInterface {
     function oracle() external view returns (PriceOracle);
     function getAccountLiquidity(address) external view returns (uint, uint, uint);
     function getAssetsIn(address) external view returns (SToken[] memory);
-    function claimSavmlend(address) external;
-    function savmlendAccrued(address) external view returns (uint);
+    function claim(address) external;
+    function accrued(address) external view returns (uint);
 }
 
-contract SavmlendLens {
+contract Lens {
     struct STokenMetadata {
         address sToken;
         uint exchangeRateCurrent;
@@ -254,36 +254,36 @@ contract SavmlendLens {
         return res;
     }
 
-    struct SavmlendBalanceMetadata {
+    struct BalanceMetadata {
         uint balance;
         uint votes;
         address delegate;
     }
 
-    function getSavmlendBalanceMetadata(SAVM savm, address account) external view returns (SavmlendBalanceMetadata memory) {
-        return SavmlendBalanceMetadata({
+    function getBalanceMetadata(SAVM savm, address account) external view returns (BalanceMetadata memory) {
+        return BalanceMetadata({
             balance: savm.balanceOf(account),
             votes: uint256(savm.getCurrentVotes(account)),
             delegate: savm.delegates(account)
         });
     }
 
-    struct SavmlendBalanceMetadataExt {
+    struct BalanceMetadataExt {
         uint balance;
         uint votes;
         address delegate;
         uint allocated;
     }
 
-    function getSavmlendBalanceMetadataExt(SAVM savm, ComptrollerLensInterface comptroller, address account) external returns (SavmlendBalanceMetadataExt memory) {
+    function getBalanceMetadataExt(SAVM savm, ComptrollerLensInterface comptroller, address account) external returns (BalanceMetadataExt memory) {
         uint balance = savm.balanceOf(account);
-        comptroller.claimSavmlend(account);
+        comptroller.claim(account);
         uint newBalance = savm.balanceOf(account);
-        uint accrued = comptroller.savmlendAccrued(account);
+        uint accrued = comptroller.accrued(account);
         uint total = add(accrued, newBalance, "sum savm total");
         uint allocated = sub(total, balance, "sub allocated");
 
-        return SavmlendBalanceMetadataExt({
+        return BalanceMetadataExt({
             balance: balance,
             votes: uint256(savm.getCurrentVotes(account)),
             delegate: savm.delegates(account),
@@ -291,15 +291,15 @@ contract SavmlendLens {
         });
     }
 
-    struct SavmlendVotes {
+    struct Votes {
         uint blockNumber;
         uint votes;
     }
 
-    function getSavmlendVotes(SAVM savm, address account, uint32[] calldata blockNumbers) external view returns (SavmlendVotes[] memory) {
-        SavmlendVotes[] memory res = new SavmlendVotes[](blockNumbers.length);
+    function getVotes(SAVM savm, address account, uint32[] calldata blockNumbers) external view returns (Votes[] memory) {
+        Votes[] memory res = new Votes[](blockNumbers.length);
         for (uint i = 0; i < blockNumbers.length; i++) {
-            res[i] = SavmlendVotes({
+            res[i] = Votes({
                 blockNumber: uint256(blockNumbers[i]),
                 votes: uint256(savm.getPriorVotes(account, blockNumbers[i]))
             });

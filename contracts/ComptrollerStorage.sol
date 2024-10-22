@@ -69,8 +69,8 @@ contract ComptrollerV2Storage is ComptrollerV1Storage {
         /// @notice Per-market mapping of "accounts in this asset"
         mapping(address => bool) accountMembership;
 
-        /// @notice Whether or not this market receives SAVM
-        bool isSavmlendd;
+        /// @notice Whether or not this market receives CoreToken
+        bool isValue;
     }
 
     /**
@@ -95,8 +95,8 @@ contract ComptrollerV2Storage is ComptrollerV1Storage {
 }
 
 contract ComptrollerV3Storage is ComptrollerV2Storage {
-    struct SavmlendMarketState {
-        /// @notice The market's last updated savmlendBorrowIndex or savmlendSupplyIndex
+    struct MarketState {
+        /// @notice The market's last updated borrowIndex or supplyIndex
         uint224 index;
 
         /// @notice The block number the index was last updated at
@@ -106,42 +106,42 @@ contract ComptrollerV3Storage is ComptrollerV2Storage {
     /// @notice A list of all markets
     SToken[] public allMarkets;
 
-    /// @notice The rate at which the flywheel distributes SAVM, per block
-    uint public savmlendRate;
+    /// @notice The rate at which the flywheel distributes, per block
+    uint public rate;
 
-    /// @notice The portion of savmlendRate that each market currently receives
-    mapping(address => uint) public savmlendSpeeds;
+    /// @notice The portion of rate that each market currently receives
+    mapping(address => uint) public speeds;
 
-    /// @notice The SAVM market supply state for each market
-    mapping(address => SavmlendMarketState) public savmlendSupplyState;
+    /// @notice The market supply state for each market
+    mapping(address => MarketState) public supplyState;
 
-    /// @notice The SAVM market borrow state for each market
-    mapping(address => SavmlendMarketState) public savmlendBorrowState;
+    /// @notice The market borrow state for each market
+    mapping(address => MarketState) public borrowState;
 
-    /// @notice The SAVM borrow index for each market for each supplier as of the last time they accrued SAVM
-    mapping(address => mapping(address => uint)) public savmlendSupplierIndex;
+    /// @notice The borrow index for each market for each supplier as of the last time they accrued
+    mapping(address => mapping(address => uint)) public supplierIndex;
 
-    /// @notice The SAVM borrow index for each market for each borrower as of the last time they accrued SAVM
-    mapping(address => mapping(address => uint)) public savmlendBorrowerIndex;
+    /// @notice The borrow index for each market for each borrower as of the last time they accrued
+    mapping(address => mapping(address => uint)) public borrowerIndex;
 
-    /// @notice The SAVM accrued but not yet transferred to each user
-    mapping(address => uint) public savmlendAccrued;
+    /// @notice The accrued but not yet transferred to each user
+    mapping(address => uint) public accrued;
 }
 
 contract ComptrollerV4Storage is ComptrollerV3Storage {
-    /// @notice The portion of SAVM that each constributor receives per block
-    mapping(address => uint) public savmlendContributorSpeeds;
+    /// @notice The portion of that each constributor receives per block
+    mapping(address => uint) public contributorSpeeds;
 
-    /// @notice Last block at which a contributor's SAVM rewards have been allocated
+    /// @notice Last block at which a contributor's rewards have been allocated
     mapping(address => uint) public lastContributorBlock;
 }
 
 contract ComptrollerV5Storage is ComptrollerV4Storage {
-    /// @notice The rate at which savmlend is distributed to the corresponding borrow market (per block)
-    mapping(address => uint) public savmlendBorrowSpeeds;
+    /// @notice The rate at which is distributed to the corresponding borrow market (per block)
+    mapping(address => uint) public borrowSpeeds;
 
-    /// @notice The rate at which savmlend is distributed to the corresponding supply market (per block)
-    mapping(address => uint) public savmlendSupplySpeeds;
+    /// @notice The rate at which is distributed to the corresponding supply market (per block)
+    mapping(address => uint) public supplySpeeds;
 }
 
 contract ComptrollerV6Storage is ComptrollerV5Storage {
@@ -151,8 +151,8 @@ contract ComptrollerV6Storage is ComptrollerV5Storage {
     /// @notice Reserve address
     address payable public reserveAddress;
 
-    /// @notice SAVM staking
-    address public savmStaking;
+    /// @notice staking
+    address public staking;
 }
 
 contract ComptrollerV7Storage is ComptrollerV6Storage {

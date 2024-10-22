@@ -4,11 +4,11 @@ import "./SToken.sol";
 
 /**
  * @title sTokenBalance Contract
- * @notice SToken which wraps Btc
+ * @notice SToken which wraps Tbo
  */
-contract SBtc is SToken {
+contract SNibi is SToken {
     /**
-     * @notice Construct a new SBtc money market
+     * @notice Construct a new Snibi money market
      * @param comptroller_ The address of the Comptroller
      * @param interestRateModel_ The address of the interest rate model
      * @param initialExchangeRateMantissa_ The initial exchange rate, scaled by 1e18
@@ -65,6 +65,10 @@ contract SBtc is SToken {
         return redeemUnderlyingInternal(redeemAmount);
     }
 
+    // function redeemUnderlyingAll() external returns (uint){
+    //     return redeemUnderlyingAllInternal(msg.sender);
+    // }
+
     /**
       * @notice Sender borrows assets from the protocol to their own address
       * @param borrowAmount The amount of the underlying asset to borrow
@@ -79,7 +83,16 @@ contract SBtc is SToken {
      * @dev Reverts upon any failure
      */
     function repayBorrow() external payable {
-        (uint err,) = repayBorrowInternal(msg.value);
+        (uint err,uint repayAmount) = repayBorrowInternal(msg.value);
+        uint refundAmount; 
+        MathError mathErr;
+        if(msg.value > repayAmount){
+            (mathErr, refundAmount) = subUInt(msg.value,repayAmount);
+            require(mathErr == MathError.NO_ERROR, "Repay Error");
+        }
+        if(refundAmount > 0){
+            refund(msg.sender,refundAmount);
+        }
         requireNoError(err, "repayBorrow failed");
     }
 
@@ -106,7 +119,7 @@ contract SBtc is SToken {
     }
 
     /**
-     * @notice Send Btc to SBtc to mint
+     * @notice Send Tbo to bBto to mint
      */
     function () external payable {
         (uint err,) = mintInternal(msg.value);
@@ -116,9 +129,9 @@ contract SBtc is SToken {
     /*** Safe Token ***/
 
     /**
-     * @notice Gets balance of this contract in terms of BTC, before this message
+     * @notice Gets balance of this contract in terms of TBO, before this message
      * @dev This excludes the value of the current message, if any
-     * @return The quantity of Btc owned by this contract
+     * @return The quantity of Tbo owned by this contract
      */
     function getCashPrior() internal view returns (uint) {
         (MathError err, uint startingBalance) = subUInt(address(this).balance, msg.value);
@@ -128,19 +141,25 @@ contract SBtc is SToken {
 
     /**
      * @notice Perform the actual transfer in, which is a no-op
-     * @param from Address sending the Btc
-     * @param amount Amount of Btc being sent
-     * @return The actual amount of Btc transferred
+     * @param from Address sending the Tbo
+     * @param amount Amount of Tbo being sent
+     * @return The actual amount of Tbo transferred
      */
     function doTransferIn(address from, uint amount) internal returns (uint) {
         // Sanity checks
         require(msg.sender == from, "sender mismatch");
-        require(msg.value == amount, "value mismatch");
+        require(msg.value >= amount, "value mismatch");
         return amount;
     }
 
+    function refund(address to,uint amount) internal {
+        require(address(this).balance >= amount, "Insufficient balance in the contract");
+        (bool success, ) = to.call.value(amount)("");
+        require(success, "Token Refund Fail");
+    }
+
     function doTransferOut(address payable to, uint amount) internal {
-        /* Send the Btc, with minimal gas and revert on failure */
+        /* Send the Tbo, with minimal gas and revert on failure */
         to.transfer(amount);
     }
 

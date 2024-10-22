@@ -1,9 +1,8 @@
 import { ethers } from "hardhat";
 import { contractAbi } from "../utils/contractInfo";
-import { whitePaperInterestRateConfig, jumpRateModelConfig} from "./config";
+import { whitePaperInterestRateConfig, jumpRateModelConfig, blockPerYear} from "./config";
 import { parseEther, parseUnits } from "ethers/lib/utils"
 import { BigNumber } from "ethers";
-
 
 const jumpRateModelV2Name = "JumpRateModelV2";
 const whitePaperInterestRateModelName = "WhitePaperInterestRateModel";
@@ -11,32 +10,34 @@ const legacyJumpRateModelV2Name = "LegacyJumpRateModelV2";
 export const jumpRateModelV2Deploy = async (owner: string) => {
     const JumpRateModelV2 = await ethers.getContractFactory(jumpRateModelV2Name);
     const jumpRateModelV2 = await JumpRateModelV2.deploy(
+        blockPerYear,
         jumpRateModelConfig.baseRatePerYear, 
         jumpRateModelConfig.multiplierPerYear, 
         jumpRateModelConfig.jumpMultiplierPerYear, 
         jumpRateModelConfig.kink_, 
-        owner,
-        {gasLimit:10000000}
+        owner
     );
     await jumpRateModelV2.deployed();
     await contractAbi(jumpRateModelV2.address, jumpRateModelV2Name);
-    console.log("jumpRateModelV2 address is %s",jumpRateModelV2.address);
+    console.log(`jumpRateModelV2 address is ${jumpRateModelV2.address}`);
+    console.log(`jumpRateModelV2 transactionHash is ${jumpRateModelV2.deployTransaction.hash}`);
     return jumpRateModelV2;
 }
 
 export const jumpRateModelV2Deploy2 = async (owner: string) => {
     const JumpRateModelV2 = await ethers.getContractFactory(jumpRateModelV2Name);
     const jumpRateModelV2 = await JumpRateModelV2.deploy(
+        blockPerYear,
         parseEther("0.02"), 
         parseEther("0.25"), 
         parseEther("0.55"), 
         parseEther("0.8"), 
-        owner,
-        {gasLimit:10000000}
+        owner
     );
     await jumpRateModelV2.deployed();
     await contractAbi(jumpRateModelV2.address, jumpRateModelV2Name);
-    console.log("jumpRateModelV2 address is %s",jumpRateModelV2.address);
+    console.log(`jumpRateModelV2 address is ${jumpRateModelV2.address}`);
+    console.log(`jumpRateModelV2 transactionHash is ${jumpRateModelV2.deployTransaction.hash}`);
     return jumpRateModelV2;
 }
 
@@ -44,9 +45,9 @@ export const jumpRateModelV2Deploy2 = async (owner: string) => {
 export const WhitePaperInterestRateModelDeploy = async (owner: string) => {
     const WhitePaperInterestRateModel = await ethers.getContractFactory(whitePaperInterestRateModelName);
     const whitePaperInterestRateModel = await WhitePaperInterestRateModel.deploy(
+        blockPerYear,
         whitePaperInterestRateConfig.baseRatePerYear, 
-        whitePaperInterestRateConfig.multiplierPerYear, 
-        {gasLimit:10000000}
+        whitePaperInterestRateConfig.multiplierPerYear
     );
     await whitePaperInterestRateModel.deployed();
     await contractAbi(whitePaperInterestRateModel.address, whitePaperInterestRateModelName);

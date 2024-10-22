@@ -2,7 +2,6 @@ import { BigNumber, Signer } from "ethers";
 import { formatEther, parseEther } from "ethers/lib/utils";
 import { ethers } from "hardhat";
 import { jumpRateModelV2Deploy, jumpRateModelV2Deploy2, WhitePaperInterestRateModelDeploy } from "./interestRate.module";
-import { sBtcDeploy } from "./sBtc.module";
 import { constants } from "buffer";
 
 

@@ -9,9 +9,8 @@ import "./EIP20NonStandardInterface.sol";
 import "./InterestRateModel.sol";
 
 /**
- * @title Savmlend's SToken Contract
+ * @title SToken Contract
  * @notice Abstract base for STokens
- * @author Savmlend 
  */
 contract SToken is STokenInterface, Exponential, TokenErrorReporter {
     /**

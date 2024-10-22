@@ -1,8 +1,7 @@
 pragma solidity ^0.5.16;
 
 /**
-  * @title Savmlend's InterestRateModel Interface
-  * @author Savmlend
+  * @title InterestRateModel Interface
   */
 contract InterestRateModel {
     /// @notice Indicator that this is an InterestRateModel contract (for inspection)

@@ -35,7 +35,7 @@ const config: HardhatUserConfig = {
 			accounts:[process.env.SEPOLIA_PRIVATE_KEY!]
 		},
 		satoshi_test:{
-			url:"107.22.17.178:8545",
+			url:"https://test-rpc-node-http.svmscan.io",
 			gas:10000000,
 			accounts:[process.env.SEPOLIA_PRIVATE_KEY!]
 		},
@@ -43,6 +43,23 @@ const config: HardhatUserConfig = {
 		  url:"https://test-rpc.biturbo.io",
 		//   gas:10000000,
 		  accounts:[process.env.BITRUBO_PRIVATE_KEY!]
+		},
+		nibitestnet:{
+			url: "http://107.22.17.178:8545",
+			accounts:[process.env.NIBI_PRIVATE_KEY!]
+		},
+		nebulatestnet: {
+			url: "https://evm-rpc.testnet-1.nibiru.fi",
+			accounts:[process.env.NIBI_PRIVATE_KEY!]
+		},
+		blasttestnet: {
+			url: "https://testnet.blast.din.dev/rpc",
+			accounts:[process.env.BLAST_PRIVATE_KEY!]
+		},
+		unichain_test:{
+			url:"https://sepolia.unichain.org",
+			gas:10000000,
+			accounts:[process.env.UNICHAIN_PRIVATE_KEY!]
 		}
 	},
 	solidity: {
@@ -63,17 +80,26 @@ const config: HardhatUserConfig = {
 		apiKey: {
 			// An API key needs to be written as the hardhat-verify plugin will require it, and the verification will fail if it is not provided.
 			// The current bitlayer browser has not yet enabled API key verification, so you can write any random string for now.
-			biturbotestnet: "U4NRVX2YX3ST4XI3UAM9CFG7MSDW12KFS6"
+			biturbotestnet: "U4NRVX2YX3ST4XI3UAM9CFG7MSDW12KFS6",
+			blasttestnet: "U4NRVX2YX3ST4XI3UAM9CFG7MSDW12KFS6"
 		},
 		customChains: [
 			{
-			network: "biturbotestnet",
-			chainId: 725019,
-			urls: {
-				apiURL: "https://testnet.biturboscan.io/api",
-				browserURL: "https://testnet.biturboscan.io/"
+				network: "biturbotestnet",
+				chainId: 725019,
+				urls: {
+						apiURL: "https://testnet.biturboscan.io/api",
+						browserURL: "https://testnet.biturboscan.io/"
+					}
+			},
+			{
+				network: "blasttestnet",
+				chainId: 168587773,
+				urls: {
+						apiURL: "https://blast-sepolia.blockpi.network/v1/rpc/public",
+						browserURL: "https://sepolia.blastexplorer.io/"
 				}
-			}
+			}		
 		]
 	}
 };

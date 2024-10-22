@@ -1,17 +1,15 @@
-import { parseEther } from "ethers/lib/utils";
 import { writeFileSync } from "fs";
 import { ethers } from "hardhat";
 import { join, resolve } from "path";
-import { sTboDeploy, sTbo__setReserveFactor,sTbo__supportMarket } from "./sBtc.module";
 import { unitollerDeploy, comptrollerDeploy, unitoller__setPendingImplementation, comptroller__setLiquidationIncentive, comptroller__become, comptroller__setCloseFactor, comptroller__setPriceOracle, comptroller__setCollateralFactor,comptroller_setMarketCapGuardian,comptroller_setPauseGuardian, comptroller_setReserveInfo } from "./comptroller.module";
 import { SErc20DelegateDeploy, sErc20DelegatorDeploy, sToken__setReserveFactor, sErc20Delegator_supportMarket,sErc20Delegator_addReserves,sErc20Delegator_setPendingAdmin } from "./sToken.module";
 import { jumpRateModelV2Deploy, jumpRateModelV2Deploy2 } from "./interestRate.module";
-import { savmlendPriceOracleDeploy,savmlendPriceOracle_setUnderlyingPrice} from './savmPriceOracle.module';
-import { savmLensDeploy } from "./savmlend-lens-module";
+import { testnetPriceOracleDeploy,priceOracle_setUnderlyingPrice} from './savmPriceOracle.module';
 // import { DAITokenDeploy, USDTTokenDeploy } from "./tokens.module";
-import { marketBtcPlatformToken,tboToken} from "./config";
-import { WBBTCTokenDepoly } from "./tokens.module"
+import { platformWrappedToken,nebulaBtcToken,blockPerYear} from "./config";
+import { coreWrapperTokenDeploy,coreToken__setReserveFactor,coreToken__supportMarket} from "./coreToken.module";
 import { BigNumber } from "ethers";
+import { WNBTCTokenDeploy } from "./tokens.module";
                
 async function main() {
 
@@ -27,87 +25,89 @@ async function main() {
     address:owner 
   }
 
-  //savmlendLens 
-  // const savmLens = await savmLensDeploy();
-
   // unitroller
   const unitoller = await unitollerDeploy();
+  // const unitoller = {
+  //   address: "0x6E754B936086Be61B10E99CC28c6550B3fb7784c"
+  // }
 
   // comptroller
   const comptroller = await comptrollerDeploy();
+  // const comptroller = {
+  //   address: "0xc444FC7a64Ae4cE16549bBC09f5c3E7f1A8218Fa"
+  // }
 
   // oracle
-  const savmPriceOracle = await savmlendPriceOracleDeploy();
+  const testnetPriceOracle = await testnetPriceOracleDeploy(platformWrappedToken.symbol);
+  // const testnetPriceOracle = {
+  //   address: "0x2190A8b03A758364426c7A2FF61190BC008e7B77"
+  // }
 
   await unitoller__setPendingImplementation(unitoller.address, comptroller.address);
   await comptroller__become(unitoller.address, comptroller.address);
   await comptroller__setCloseFactor(unitoller.address);
   await comptroller__setLiquidationIncentive(unitoller.address);
-  await comptroller__setPriceOracle(unitoller.address, savmPriceOracle.address)
+  await comptroller__setPriceOracle(unitoller.address, testnetPriceOracle.address);
   await comptroller_setMarketCapGuardian(unitoller.address,timeLock.address);
   await comptroller_setPauseGuardian(unitoller.address,timeLock.address);
   await comptroller_setReserveInfo(unitoller.address,owner);
+
   // jumpRateModelV2Base
   const jumpRateModelV2Base = await jumpRateModelV2Deploy(timeLock.address);
+  // const jumpRateModelV2Base = {
+  //    address:"0x67d9623F08653Eb26c74599CC7830eD0e5845B84"
+  // }
+
 
   //stable jumpRateModelV2Savm
   const jumpRateModelV2Savm = await jumpRateModelV2Deploy2(timeLock.address);
+  // const jumpRateModelV2Savm = {
+  //   address: "0x133feC06e706F6a3448b26F0a67728995e96cB1F"
+  // }
 
   //delegate
   const sErc20Delegate = await SErc20DelegateDeploy();
-
-  // sbtc -chainTokon
-  // const sBtc = await sBtcDeploy(
-  //   unitoller.address, 
-  //   jumpRateModelV2Base.address, 
-  //   timeLock.address
-  // );
-  
-  // await sBtc__supportMarket(
-  //   unitoller.address, 
-  //   sBtc.address
-  // );
-  // await savmlendPriceOracle_setUnderlyingPrice(
-  //   signer,
-  //   savmPriceOracle.address, 
-  //   sBtc.address, 
-  //   marketBtcPlatformToken.price
-  // );
-  // await sBtc__setReserveFactor(sBtc.address);
-  // await comptroller__setCollateralFactor(unitoller.address, sBtc.address,marketBtcPlatformToken.collateralFactor)
+  // const sErc20Delegate = {
+  //   address: "0x9827bf947649e53f74aF8c212206a5A1DB6333Fc"
+  // }
 
   //tbo chain token deploy
-  const sTbo = await sTboDeploy(
+  const sNibi = await coreWrapperTokenDeploy(
     unitoller.address,
     jumpRateModelV2Base.address,
     timeLock.address
   );
 
-  await sTbo__supportMarket(
+  // const sNibi = {
+    // address: "0x22dad2301d4D9EAF1643Fe5A18779d4328b54104"
+  // }
+
+  await coreToken__supportMarket(
     unitoller.address, 
-    sTbo.address
+    sNibi.address
   )
-  await savmlendPriceOracle_setUnderlyingPrice(
+  await priceOracle_setUnderlyingPrice(
     signer,
-    savmPriceOracle.address, 
-    sTbo.address, 
-    tboToken.price
+    testnetPriceOracle.address, 
+    sNibi.address, 
+    platformWrappedToken.price
   );
-  await sTbo__setReserveFactor(sTbo.address)
-  await comptroller__setCollateralFactor(unitoller.address, sTbo.address,tboToken.collateralFactor)
+  await coreToken__setReserveFactor(sNibi.address)
+  await comptroller__setCollateralFactor(unitoller.address, sNibi.address,platformWrappedToken.collateralFactor)
 
-  const wbTCToken = await WBBTCTokenDepoly()
-
-  // const sSavm = await deployDelegatorToken("0x77726bfbe61b6ad7463466fd521a3a4b89b0efd8",unitoller.address,jumpRateModelV2Savm.address,timeLock.address,sErc20Delegate.address,
-  //   sSavmlendTokenConfig.name,sSavmlendTokenConfig.symbol,timeLock.address,sSavmlendTokenConfig.initReserves,sSavmlendTokenConfig.reserveFactor,sSavmlendTokenConfig.initialExchangeRateMantissa)
-  // console.log("sSavm address is %s",sSavm.address)
+  const wbTCToken = await WNBTCTokenDeploy()
+  // const wbTCToken = {
+  //   address: "0x88B6938bE8180F5DdF0308bCea611A98255390bd"
+  // }
 
   const bBTC = await deployDelegatorToken(wbTCToken.address,unitoller.address,jumpRateModelV2Savm.address,timeLock.address,sErc20Delegate.address,
-    marketBtcPlatformToken.name,marketBtcPlatformToken.symbol,timeLock.address,marketBtcPlatformToken.initReserves,marketBtcPlatformToken.reserveFactor,marketBtcPlatformToken.initialExchangeRateMantissa)
+    nebulaBtcToken.name,nebulaBtcToken.symbol,timeLock.address,nebulaBtcToken.initReserves,nebulaBtcToken.reserveFactor,nebulaBtcToken.initialExchangeRateMantissa)
   console.log("bBTC address is %s",bBTC.address)
-
-   await savmlendPriceOracle_setUnderlyingPrice(signer,savmPriceOracle.address, bBTC.address, marketBtcPlatformToken.price);
-   await comptroller__setCollateralFactor(unitoller.address, bBTC.address,marketBtcPlatformToken.collateralFactor);
+    // const bBTC = {
+    //   "address":"0xA46486E3b1ef3190A419a23A92357cbEd0235bBA"
+    // }
+   await priceOracle_setUnderlyingPrice(signer,testnetPriceOracle.address, bBTC.address, nebulaBtcToken.price);
+   await comptroller__setCollateralFactor(unitoller.address, bBTC.address,nebulaBtcToken.collateralFactor);
 
   //other token
   // todo 
@@ -144,12 +144,12 @@ async function main() {
     // maxMillon: maxMillon.address,
     unitoller: unitoller.address,
     comptroller: comptroller.address,
-    savmPriceOracle: savmPriceOracle.address,
+    priceOracle: testnetPriceOracle.address,
     // whitePaperInterestRateModel:whitePaperInterestRateModel.address,
     jumpRateModelBase: jumpRateModelV2Base.address,
     jumpRateModelSavm: jumpRateModelV2Savm.address,
     sErc20Delegate: sErc20Delegate.address,
-    sTbo: sTbo.address,
+    sNibi: sNibi.address,
     bBTC: bBTC.address,
 
     // tokenAddresses: tokenAddresses,
@@ -180,7 +180,6 @@ async function deployDelegatorToken(tokenAddress:string,unitoller:string,rateMod
     tokenSymbol
   )
 
-  // 
   await sErc20Delegator_supportMarket(
     unitoller, 
     sErc20Delegator.address

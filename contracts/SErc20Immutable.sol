@@ -3,9 +3,8 @@ pragma solidity ^0.5.16;
 import "./SErc20.sol";
 
 /**
- * @title Savmlend's SErc20Immutable Contract
+ * @title SErc20Immutable Contract
  * @notice STokens which wrap an EIP-20 underlying and are immutable
- * @author Savmlend
  */
 contract SErc20Immutable is SErc20 {
     /**

@@ -4,8 +4,8 @@ import "./InterestRateModel.sol";
 import "./SafeMath.sol";
 
 /**
-  * @title Savmlend's JumpRateModel Contract V2
-  * @author Savmlend (modified by Dharma Labs)
+  * @title JumpRateModel Contract V2
+  * @author (modified by Dharma Labs)
   * @notice Version 2 modifies Version 1 by enabling updateable parameters.
   */
 contract JumpRateModelV2 is InterestRateModel {
@@ -21,7 +21,7 @@ contract JumpRateModelV2 is InterestRateModel {
     /**
      * @notice The approximate number of blocks per year that is assumed by the interest rate model
      */
-    uint public constant blocksPerYear = 15768000;
+    uint public blocksPerYear;
 
     /**
      * @notice The multiplier of utilization rate that gives the slope of the interest rate
@@ -51,9 +51,9 @@ contract JumpRateModelV2 is InterestRateModel {
      * @param kink_ The utilization point at which the jump multiplier is applied
      * @param owner_ The address of the owner, i.e. the Timelock contract (which has the ability to update parameters directly)
      */
-    constructor(uint baseRatePerYear, uint multiplierPerYear, uint jumpMultiplierPerYear, uint kink_, address owner_) public {
+    constructor(uint _blocksPerYear,uint baseRatePerYear, uint multiplierPerYear, uint jumpMultiplierPerYear, uint kink_, address owner_) public {
         owner = owner_;
-
+        blocksPerYear = _blocksPerYear;
         updateJumpRateModelInternal(baseRatePerYear,  multiplierPerYear, jumpMultiplierPerYear, kink_);
     }
 

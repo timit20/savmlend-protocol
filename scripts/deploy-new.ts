@@ -6,22 +6,24 @@ import { sTboDeploy, sTbo__setReserveFactor,sTbo__supportMarket } from "./sBtc.m
 import { unitollerDeploy, comptrollerDeploy, unitoller__setPendingImplementation, comptroller__setLiquidationIncentive, comptroller__become, comptroller__setCloseFactor, comptroller__setPriceOracle, comptroller__setCollateralFactor,comptroller_setMarketCapGuardian,comptroller_setPauseGuardian, comptroller_setReserveInfo } from "./comptroller.module";
 import { SErc20DelegateDeploy, sErc20DelegatorDeploy, sToken__setReserveFactor, sErc20Delegator_supportMarket,sErc20Delegator_addReserves,sErc20Delegator_setPendingAdmin } from "./sToken.module";
 import { jumpRateModelV2Deploy, jumpRateModelV2Deploy2 } from "./interestRate.module";
-import { savmlendPriceOracleDeploy,savmlendPriceOracle_setUnderlyingPrice} from './savmPriceOracle.module';
-import { savmLensDeploy } from "./savmlend-lens-module";
+import { testnetPriceOracleDeploy,priceOracle_setUnderlyingPrice} from './savmPriceOracle.module';
 // import { DAITokenDeploy, USDTTokenDeploy } from "./tokens.module";
-import { marketBtcPlatformToken,tboToken} from "./config";
 import { WBBTCTokenDepoly } from "./tokens.module"
 import { BigNumber } from "ethers";
+import { WNBTCTokenDeploy } from "./tokens.module"
+import { platformWrappedToken,nebulaBtcToken,blockPerYear} from "./config";
 
 async function main() {
     const signer = await ethers.provider.getSigner();
     const owner = await signer.getAddress();
 
+    const wnBtc = await WNBTCTokenDeploy();
+
     const unitoller = {
-        address:"0x361a1E859B356c7E9882b44D2219A4457ce5B7F2"
+        address:"0x31810266C0696Ab6087eFFd4C20fb2dbE1894Ad6"
     }
     const jumpRateModelV2Base = {
-        address:"0x8a727C93bcF86F00d8B7d3CF779B4ac8857aB352"
+        address:"0xb417889206B90EA5A5ED0BcDDAE3537e693D579d"
     }
     const savmPriceOracle ={
         address:"0x7a4a3E2070dE81Ca7cBd06027f87b60ce1f0D338"
@@ -30,11 +32,11 @@ async function main() {
         address:owner
     }
 
-    const sTbo = await sTboDeploy(
-        unitoller.address,
-        jumpRateModelV2Base.address,
-        timeLock.address
-    );
+    // const sTbo = await sTboDeploy(
+    //     unitoller.address,
+    //     jumpRateModelV2Base.address,
+    //     timeLock.address
+    // );
     // const sTbo = {
     //   address:"0x31E47764deDDC02475CCdd14536820Fd858ad8C2"
     // }
@@ -50,7 +52,10 @@ async function main() {
     //   tboToken.price
     // );
     // await sTbo__setReserveFactor(sTbo.address)
-    // await comptroller__setCollateralFactor(unitoller.address, sTbo.address,tboToken.collateralFactor)
+    const wbtcAddress = {
+        address: "0x1E249591De21F4b051cdc4378A523b25903F7938"
+    }
+    await comptroller__setCollateralFactor(unitoller.address, wbtcAddress.address,nebulaBtcToken.collateralFactor)
   
 }
 

@@ -22,7 +22,7 @@ export const simplePriceOracle_setUnderlyingPrice = async (signer:Signer,simpleP
     const simple = await ethers.getContractAt(simplePriceOracleName, simplePriceOracleAddress, signer);
     //消耗gas比较多
     // console.log("sToken is %s ,underlyingPriceMantissa is %s",cToken,underlyingPriceMantissa);
-    await simple.setUnderlyingPrice(sToken, underlyingPriceMantissa, { gasLimit: 10000000 }).catch(err => console.log(err));
+    await simple.setUnderlyingPrice(sToken, underlyingPriceMantissa).catch(err => console.log(err));
     // await simple.setUnderlyingPrice(cToken, underlyingPriceMantissa).catch(err => console.log(err));
     console.log(`simplePriceOracle_setUnderlyingPrice call success ${sToken} ${formatEther(underlyingPriceMantissa)}$ !!`)
 }

@@ -3,7 +3,7 @@ pragma solidity ^0.5.16;
 import "./PriceOracle.sol";
 import "./SErc20.sol";
 
-contract SavmlendPriceOracle is PriceOracle {
+contract TestNetPriceOracle is PriceOracle {
     /**
     * @notice Administrator for this contract
     */
@@ -11,12 +11,15 @@ contract SavmlendPriceOracle is PriceOracle {
     mapping(address => uint) prices;
     event PricePosted(address asset, uint previousPriceMantissa, uint requestedPriceMantissa, uint newPriceMantissa);
 
-    constructor() public {
+    string public coreTokenName;
+
+    constructor(string memory _coreTokenName) public {
         admin = msg.sender;
+        coreTokenName = _coreTokenName;
     }
 
     function getUnderlyingPrice(SToken sToken) public view returns (uint) {
-        if (compareStrings(sToken.symbol(), "sBTC")) {
+        if (compareStrings(sToken.symbol(), coreTokenName)) {
             return prices[address(sToken)];
         } else {
             return prices[address(SErc20(address(sToken)).underlying())];
@@ -25,7 +28,7 @@ contract SavmlendPriceOracle is PriceOracle {
 
     function setUnderlyingPrice(SToken sToken, uint underlyingPriceMantissa) public {
         require(msg.sender == admin, "only admin can set underlyingPrice");
-        if(compareStrings(sToken.symbol(),"sBTC" )){
+        if(compareStrings(sToken.symbol(),coreTokenName)){
             prices[address(sToken)] = underlyingPriceMantissa;
         }
         else{

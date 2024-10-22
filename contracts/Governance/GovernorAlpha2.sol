@@ -3,7 +3,7 @@ pragma experimental ABIEncoderV2;
 
 contract GovernorAlpha2 {
     /// @notice The name of this contract
-    string public constant name = "Savmlend Governor Alpha2";
+    string public constant name = "Governor Alpha2";
 
     /// @notice The number of votes in support of a proposal required in order for a quorum to be reached and for a vote to succeed
     function quorumVotes() public pure returns (uint) { return 130000e18; } // 130000 = 2% of SAVM
@@ -20,10 +20,10 @@ contract GovernorAlpha2 {
     /// @notice The duration of voting on a proposal, in blocks
     function votingPeriod() public pure returns (uint) { return 17280; } // ~3 days in blocks (assuming 15s blocks)
 
-    /// @notice The address of the Savmlend Protocol Timelock
+    /// @notice The address of the Protocol Timelock
     TimelockInterface public timelock;
 
-    /// @notice The address of the Savmlend governance token
+    /// @notice The address of the governance token
     SavmInterface public savm;
 
     /// @notice The address of the Governor Guardian

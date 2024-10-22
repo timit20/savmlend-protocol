@@ -6,6 +6,8 @@ const usdcToken = "USDCToken"
 const uniToken = "UNIToken"
 const linkToken = "LinkToken"
 const wbBtcToken = "WBBTCToken"
+const wnBtcToken = "WNBTCToken"
+const unicornToken = "UNICORNToken"
 
 export const USDTTokenDeploy = async () => {
     const USDT = await ethers.getContractFactory(usdtToken);
@@ -59,4 +61,24 @@ export const WBBTCTokenDepoly = async() =>{
     // await contractAbi(usdt.address, daiToken);
     console.log("wbbtc address is %s",wbbtc.address)
     return wbbtc;
+}
+
+export const WNBTCTokenDeploy = async() =>{
+    const WNBTC = await ethers.getContractFactory(wnBtcToken);
+    const wnbtc = await WNBTC.deploy();
+    await wnbtc.deployed();
+    // await contractAbi(usdt.address, daiToken);
+    console.log("wnbtc address is %s",wnbtc.address)
+    // console.log(`wnbtc deployed is ${JSON.stringify(wnbtc)}`)
+    return wnbtc;
+}
+
+export const UNICORNTokenDeploy = async() =>{
+    const UNICORN = await ethers.getContractFactory(unicornToken);
+    const unicorn = await UNICORN.deploy();
+    await unicorn.deployed();
+    // await contractAbi(usdt.address, daiToken);
+    console.log("unicorn address is %s",unicorn.address);
+    // console.log(`unicorn deployed is ${JSON.stringify(wnbtc)}`)
+    return unicorn;
 }

@@ -3,9 +3,8 @@ pragma solidity ^0.5.16;
 import "./SToken.sol";
 
 /**
- * @title Savmlend's SEther Contract
+ * @title SEther Contract
  * @notice SToken which wraps Ether
- * @author Savmlend
  */
 contract SEther is SToken {
     /**

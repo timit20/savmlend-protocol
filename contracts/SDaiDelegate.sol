@@ -3,9 +3,8 @@ pragma solidity ^0.5.16;
 import "./SErc20Delegate.sol";
 
 /**
- * @title Savmlend's SDai Contract
+ * @title SDai Contract
  * @notice SToken which wraps Multi-Collateral DAI
- * @author Savmlend
  */
 contract SDaiDelegate is SErc20Delegate {
     /**

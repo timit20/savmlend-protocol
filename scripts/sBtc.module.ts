@@ -1,34 +1,8 @@
 import { ethers } from "hardhat";
-import { contractAbi } from "../utils/contractInfo";
-import { marketBtcPlatformToken,tboToken } from "./config";
+import { platformWrappedToken} from "./config";
 
-
-const SBtcName = "SBtc";
 const sDelegatorName = "SErc20Delegator";
 const comptrollerName = "contracts/Comptroller.sol:Comptroller";
-
-
-export const sBtcDeploy = async (
-    unitrollerAddress: string,
-    etherJumpRateModelV2Address: string,
-    owner: string
-) => {
-    const SBtc = await ethers.getContractFactory(SBtcName);
-    const sBtc = await SBtc.deploy(
-        unitrollerAddress,
-        etherJumpRateModelV2Address,
-        marketBtcPlatformToken.initialExchangeRateMantissa, 
-        marketBtcPlatformToken.name,  
-        marketBtcPlatformToken.symbol,
-        marketBtcPlatformToken.decimals,
-        owner
-    );
-    await sBtc.deployed();
-    // await contractAbi(sEther.address, sBtcName);
-    console.log("sBtc address is %s",sBtc.address);
-    return sBtc
-}
-
 const STboName = "STbo";
 
 export const sTboDeploy = async (
@@ -40,10 +14,10 @@ export const sTboDeploy = async (
     const sTbo = await STbo.deploy(
         unitrollerAddress,
         etherJumpRateModelV2Address,
-        tboToken.initialExchangeRateMantissa, 
-        tboToken.name,
-        tboToken.symbol,
-        tboToken.decimals,
+        platformWrappedToken.initialExchangeRateMantissa, 
+        platformWrappedToken.name,
+        platformWrappedToken.symbol,
+        platformWrappedToken.decimals,
         owner
     );
     await sTbo.deployed();
@@ -52,13 +26,10 @@ export const sTboDeploy = async (
     return sTbo
 }
 
-
-
-
 // 设置保证金系数   0.1 * 10 ^ 18
 export const sBtc__setReserveFactor = async(sBtcAddress:string)=>{
     const cEther = await ethers.getContractAt(sDelegatorName,sBtcAddress);
-    await cEther._setReserveFactor(marketBtcPlatformToken.reserveFactor);
+    await cEther._setReserveFactor(platformWrappedToken.reserveFactor);
     console.log("sEther__setReserveFactor call success !!");
 }
 
@@ -80,6 +51,6 @@ export const sTbo__supportMarket = async (comptrollerG7Address:string, sEtherAdd
 // 设置保证金系数   0.1 * 10 ^ 18
 export const sTbo__setReserveFactor = async(sTboAddress:string)=>{
     const cEther = await ethers.getContractAt(sDelegatorName,sTboAddress);
-    await cEther._setReserveFactor(marketBtcPlatformToken.reserveFactor);
+    await cEther._setReserveFactor(platformWrappedToken.reserveFactor);
     console.log("sTbo__setReserveFactor call success !!");
 }

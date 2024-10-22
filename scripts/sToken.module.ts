@@ -32,8 +32,7 @@ export const sERC20TokenDepoloy = async(erc20Address:string,
         parseEther(exchangeRate),
         name,
         symbol,
-        18,
-        {"gasLimit":30000}
+        18
     );
     await erc20Token.deployed();
     console.log("deploy success");
@@ -44,10 +43,11 @@ export const sERC20TokenDepoloy = async(erc20Address:string,
 // used on ctoken which support proxy 
 export const SErc20DelegateDeploy = async () => {
     const SErc20Delegate = await ethers.getContractFactory(SErc20DelegateName);
-    const sErc20Delegate = await SErc20Delegate.deploy({gasLimit:6000000});
+    const sErc20Delegate = await SErc20Delegate.deploy();
     await sErc20Delegate.deployed();
     await contractAbi(sErc20Delegate.address, SErc20DelegateName);
-    console.log("sErc20Delegate address is %s",sErc20Delegate.address);
+    console.log(`sErc20Delegate address is ${sErc20Delegate.address}`);
+    console.log(`sErc20Delegate transactionHash is ${sErc20Delegate.deployTransaction.hash}`);
     return sErc20Delegate;
 }
 
@@ -94,7 +94,7 @@ export const sErc20DelegatorDeploy =async (
 
 //   0.1 * 10 ^ 18
 export const sToken__setReserveFactor = async(CErc20DelegatorAddress:string,reserveFactor:BigNumber)=>{
-    const cToken = await ethers.getContractAt("CErc20Delegator",CErc20DelegatorAddress);
+    const cToken = await ethers.getContractAt(SErc20DelegatorName,CErc20DelegatorAddress);
     await cToken._setReserveFactor(reserveFactor);
     console.log("cToken__setReserveFactor call success !!");
 }

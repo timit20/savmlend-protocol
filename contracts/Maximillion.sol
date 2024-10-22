@@ -3,8 +3,7 @@ pragma solidity ^0.5.16;
 import "./SEther.sol";
 
 /**
- * @title Savmlend's Maximillion Contract
- * @author Savmlend
+ * @title Maximillion Contract
  */
 contract Maximillion {
     /**
